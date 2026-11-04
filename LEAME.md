@@ -16,6 +16,7 @@ El editor guarda solo el trabajo en el navegador mientras se usa. Con **Guardar*
 - Pantallas con texto, imágenes, formas, botones, zonas interactivas y videos (propios o de YouTube).
 - Acciones al tocar: ventanas emergentes, ir a otra pantalla, enlaces.
 - Rotación, efectos al pasar el mouse, selección de varios objetos, alinear y distribuir, copiar y pegar entre pantallas.
+- **Plantillas** para arrancar con **Nuevo**: escape room (portada, cuatro candados y salida, sin flechas: solo se avanza resolviendo) y set de actividades (un menú con cuatro actividades para hacer en el orden que quieran). Vienen con un ejemplo de Matemática para cambiar por el contenido propio.
 - Actividades: opción múltiple, ordenar palabras o pasos, rompecabezas, temporizador, llave y cerradura (con llave o con código), efecto linterna y video con preguntas.
 - Nueve tipografías libres pensadas para el aula, incluidas en el archivo: Andika, Atkinson Hyperlegible, Lexend, OpenDyslexic, Comic Neue, Fredoka, Patrick Hand, Merriweather y JetBrains Mono.
 - Acceso directo a bancos libres de imágenes y videos con filtros de contenido.

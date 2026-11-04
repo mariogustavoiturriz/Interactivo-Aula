@@ -108,6 +108,13 @@ input[type=range]{width:100%}
 .banco .lic{color:var(--gris)}
 .banco .botones{margin-top:6px}
 .caja ul{padding-left:18px;font-size:13.5px;margin:6px 0}
+.plantillas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.plantilla{white-space:normal;min-width:0;width:100%;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;text-align:left;padding:12px 14px;border-radius:12px;align-items:start;line-height:1.35}
+.plantilla .pl-ico{grid-row:span 2;font-size:28px;line-height:1}
+.plantilla b{font-size:16px;color:var(--azul)}
+.plantilla span:last-child{font-size:13px;color:var(--gris)}
+.plantilla:hover{border-color:var(--azul-2)}
+@media (max-width:600px){.plantillas{grid-template-columns:1fr}}
 .caja li{margin-bottom:4px}
 @media (max-width:900px){
   body{height:auto;min-height:100%}
@@ -123,7 +130,7 @@ input[type=range]{width:100%}
 <header class="barra">
   <span class="logo">Interactivo · Aula</span>
   <input id="titulo" type="text" aria-label="Título de la presentación " placeholder="Título de la presentación">
-  <button id="b-nuevo">Nuevo</button>
+  <button id="b-nuevo" title="Empezar en blanco o desde una plantilla (escape room, set de actividades)">Nuevo</button>
   <button id="b-abrir" title="Abre un proyecto (.json) o un HTML exportado con esta herramienta">Abrir</button>
   <button id="b-guardar" title="Descarga el proyecto para seguir editándolo (Ctrl+S)">Guardar</button>
   <button id="b-prev">▶ Vista previa</button>
@@ -187,7 +194,7 @@ input[type=range]{width:100%}
 <div id="acerca" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="acerca-t">
   <div class="caja">
     <h2 id="acerca-t">Presentaciones interactivas para el aula</h2>
-    <p style="font-size:13px;color:var(--gris);margin-top:-6px">Versión 0.8 · 4 de noviembre de 2026</p>
+    <p style="font-size:13px;color:var(--gris);margin-top:-6px">Versión 0.9 · 4 de noviembre de 2026</p>
     <p>Editor libre para armar presentaciones con ventanas emergentes, zonas para tocar y navegación entre pantallas, al estilo de las herramientas comerciales pero sin cuentas, sin marcas de agua y sin depender de internet.</p>
     <p><b>Cómo se comparte:</b> con <b>Exportar HTML</b> obtenés un único archivo que se abre en cualquier navegador, en la compu o en el celular, y se puede subir a un aula virtual o pasar por pendrive. Ese mismo archivo se puede volver a abrir acá para seguir editándolo.</p>
     <p><b>Dónde quedan tus datos:</b> todo se procesa en tu navegador. Nada se sube a ningún servidor.</p>
@@ -207,6 +214,20 @@ input[type=range]{width:100%}
     <div class="botones"><button id="vid-archivo">Elegir archivo de video</button></div>
     <p class="nota">MP4 o WebM. Queda guardado dentro de la presentación y funciona sin internet, pero el archivo final pesa lo mismo que el video: conviene que sea corto (hasta unos 30 MB).</p>
     <div class="botones" style="justify-content:flex-end"><button id="vid-cancelar">Cancelar</button></div>
+  </div>
+</div>
+
+<div id="m-plantillas" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-plantillas-t">
+  <div class="caja ancha">
+    <h2 id="m-plantillas-t">Empezar una presentación nueva</h2>
+    <p style="margin-top:-4px">Elegí cómo arrancar. Las plantillas vienen armadas con un ejemplo de Matemática para que cambies los textos y las respuestas por los tuyos.</p>
+    <div class="plantillas">
+      <button class="plantilla" data-plantilla="escape"><span class="pl-ico" aria-hidden="true">🔐</span><b>Escape room</b><span>Seis pantallas: portada, cuatro candados (pregunta, código, llave con linterna y ordenar pasos) y salida. Solo se avanza resolviendo.</span></button>
+      <button class="plantilla" data-plantilla="actividades"><span class="pl-ico" aria-hidden="true">🧭</span><b>Set de actividades</b><span>Un menú con cuatro actividades (opción múltiple, ordenar palabras, ordenar pasos y rompecabezas) que se hacen en el orden que quieran.</span></button>
+      <button class="plantilla" data-plantilla="blanco"><span class="pl-ico" aria-hidden="true">📄</span><b>En blanco</b><span>Una sola pantalla vacía.</span></button>
+      <button class="plantilla" data-plantilla="ejemplo"><span class="pl-ico" aria-hidden="true">✨</span><b>Presentación de ejemplo</b><span>Portada y una pantalla con ventanas emergentes.</span></button>
+    </div>
+    <div class="botones" style="justify-content:flex-end;margin-top:12px"><button id="pl-cancelar">Cancelar</button></div>
   </div>
 </div>
 
@@ -1122,6 +1143,160 @@ function proyectoEjemplo(){
     Object.assign(FABRICA.boton(), {x: 60, y: 440, w: 200, h: 56, texto: '◀ Volver', tam: 20, accion: accion({tipo: 'anterior'})})
   );
   return {app: 'interactivo-aula', version: 1, titulo: 'Mi presentación interactiva', ancho: ANCHO, alto: ALTO, navegacion: true, pantallas: [p1, p2]};
+}
+
+/* ---------- plantillas: escape room y set de actividades ---------- */
+// Cada plantilla arma un proyecto completo con los mismos elementos del editor, listo para cambiarle los textos.
+function textoP(datos){ return Object.assign(FABRICA.texto(), datos); }
+function botonIr(destino, datos){ return Object.assign(FABRICA.boton(), {w: 200, h: 56, tam: 20, accion: accion({tipo: 'ir', destino})}, datos); }
+function botonPista(texto){
+  return Object.assign(FABRICA.boton(), {x: 790, y: 24, w: 146, h: 48, tam: 18, texto: '💡 Pista', relleno: '#fff4d6', color: '#5a4300', borde: 2, colorBorde: '#e8a317',
+    accion: accion({tipo: 'ventana', titulo: 'Pista', texto})});
+}
+
+function plantillaEscape(){
+  const portada = pantallaNueva('Portada'), c1 = pantallaNueva('Candado 1: la pizarra'), c2 = pantallaNueva('Candado 2: el código'),
+        c3 = pantallaNueva('Candado 3: a oscuras'), c4 = pantallaNueva('Candado 4: la última puerta'), fin = pantallaNueva('¡Salieron!');
+  const encabezado = (t, color) => textoP({x: 40, y: 24, w: 730, h: 56, texto: t, tam: 26, negrita: true, color: color || '#14345f'});
+
+  portada.fondo = '#1b2238';
+  portada.elementos.push(
+    textoP({x: 60, y: 70, w: 840, h: 110, texto: 'Escape del aula de Matemática', tam: 50, color: '#ffffff', negrita: true, alinear: 'center'}),
+    textoP({x: 130, y: 190, w: 700, h: 130, texto: 'Quedaron encerrados en el aula. Para salir hay que abrir cuatro candados, y cada uno se abre resolviendo un desafío. Se puede jugar solo o en grupo.', tam: 22, color: '#d8deea', alinear: 'center'}),
+    Object.assign(FABRICA.boton(), {x: 370, y: 350, w: 220, h: 66, texto: 'Entrar 🔑', tam: 24, relleno: '#e8a317', color: '#1d2430', accion: accion({tipo: 'siguiente'})}),
+    textoP({x: 130, y: 450, w: 700, h: 50, texto: 'No hay flechas: solo se avanza abriendo cada candado.', tam: 17, color: '#9aa6bd', alinear: 'center'})
+  );
+
+  c1.fondo = '#f3efe4';
+  c1.elementos.push(
+    encabezado('Candado 1 de 4 · La pizarra'),
+    textoP({x: 40, y: 82, w: 880, h: 50, texto: 'En la pizarra quedó escrita una ecuación. Si la resuelven, aparece la puerta.', tam: 20, color: '#3b4556'}),
+    Object.assign(FABRICA.quiz(), {x: 220, y: 150, w: 520, h: 330, pregunta: 'Si 3x + 5 = 20, ¿cuánto vale x?', opciones: '3\n5\n15\n25/3', correcta: 2,
+      msjBien: '¡Correcto! La pizarra se borra y aparece una puerta.', msjMal: 'No es esa. Revisen la cuenta.', reintentar: true, exito: {tipo: 'siguiente', destino: ''}}),
+    botonPista('Primero resten 5 en los dos miembros de la igualdad. Después dividan por 3.')
+  );
+
+  c2.fondo = '#e8eef6';
+  c2.elementos.push(
+    encabezado('Candado 2 de 4 · El código'),
+    Object.assign(FABRICA.rect(), {x: 60, y: 110, w: 470, h: 330, relleno: '#fffdf5', color: '#1d2430', borde: 2, colorBorde: '#c9bfa5', rot: -2, tam: 22, negrita: false, alinear: 'left',
+      texto: 'Una nota pegada en la puerta dice:\n\nEl código tiene tres cifras.\n1.ª cifra: el resultado de 2³ − 5\n2.ª cifra: la raíz cuadrada de 49\n3.ª cifra: 15 dividido 3'}),
+    Object.assign(FABRICA.cerradura(), {x: 640, y: 170, w: 160, h: 192, modo: 'codigo', codigo: '375', alt: 'Candado con código',
+      msjBloqueada: 'Tiene un código de tres cifras.', exito: {tipo: 'siguiente', destino: ''}}),
+    textoP({x: 580, y: 380, w: 280, h: 50, texto: 'Tocá el candado para escribir el código.', tam: 17, color: '#3b4556', alinear: 'center'}),
+    botonPista('Calculen cada cifra por separado. Por ejemplo, 2³ = 2 × 2 × 2 = 8.')
+  );
+
+  c3.fondo = '#2a3140';
+  c3.elementos.push(
+    encabezado('Candado 3 de 4 · A oscuras', '#ffffff'),
+    textoP({x: 40, y: 82, w: 720, h: 40, texto: 'Se cortó la luz. Busquen la llave con la linterna y abran el armario.', tam: 19, color: '#d8deea'}),
+    Object.assign(FABRICA.rect(), {x: 640, y: 150, w: 240, h: 330, relleno: '#6b4f33', borde: 3, colorBorde: '#3e2c1b', radio: 8, texto: 'ARMARIO', tam: 22, color: '#f3e3c8'}),
+    Object.assign(FABRICA.cerradura(), {x: 720, y: 290, w: 80, h: 96, modo: 'llave', nombre: 'llave del armario', alt: 'Cerradura del armario',
+      msjBloqueada: 'Está cerrada. Busquen la llave en la oscuridad.', exito: {tipo: 'siguiente', destino: ''}}),
+    Object.assign(FABRICA.llave(), {x: 120, y: 440, w: 110, h: 55, nombre: 'llave del armario', rot: -20, alt: 'Llave'}),
+    botonPista('La llave quedó en el piso, del lado contrario al armario.'),
+    // la linterna deja ver el encabezado: arranca debajo
+    Object.assign(FABRICA.linterna(), {x: 0, y: 130, w: 960, h: 410, radio: 110, oscuridad: 0.95})
+  );
+
+  c4.fondo = '#f3efe4';
+  c4.elementos.push(
+    encabezado('Candado 4 de 4 · La última puerta'),
+    Object.assign(FABRICA.ordenar(), {x: 120, y: 110, w: 720, h: 360, modo: 'lineas', consigna: 'Ordenen los pasos para resolver 2x − 4 = 10',
+      texto: 'Sumar 4 en los dos miembros\n2x = 14\nDividir por 2 en los dos miembros\nx = 7', msjBien: '¡Perfecto! La puerta se abre.', msjMal: 'Todavía no. Revisen el orden de los pasos.',
+      exito: {tipo: 'siguiente', destino: ''}}),
+    botonPista('Lo primero es dejar sola la parte que tiene la x.')
+  );
+
+  fin.fondo = '#1f7a52';
+  fin.elementos.push(
+    textoP({x: 60, y: 120, w: 840, h: 110, texto: '¡Escaparon! 🎉', tam: 60, color: '#ffffff', negrita: true, alinear: 'center'}),
+    textoP({x: 140, y: 240, w: 680, h: 100, texto: 'Abrieron los cuatro candados. Anoten cuánto tardaron y compárenlo con los otros grupos.', tam: 23, color: '#e2f4ea', alinear: 'center'}),
+    Object.assign(FABRICA.boton(), {x: 370, y: 380, w: 220, h: 60, texto: 'Volver a jugar', tam: 20, relleno: '#ffffff', color: '#1f7a52', accion: accion({tipo: 'ir', destino: portada.id})})
+  );
+
+  return {app: 'interactivo-aula', version: 1, titulo: 'Escape del aula de Matemática', ancho: ANCHO, alto: ALTO, navegacion: false, letra: 'sistema',
+    pantallas: [portada, c1, c2, c3, c4, fin]};
+}
+
+// Imagen para el rompecabezas del set de actividades (SVG propio, viaja adentro del archivo)
+function imagenPitagoras(){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320"><rect width="480" height="320" fill="#fdf8ec"/>
+<g stroke="#1d2430" stroke-width="3" stroke-linejoin="round">
+<polygon points="150,170 246,170 150,98" fill="#ffffff"/>
+<rect x="150" y="170" width="96" height="96" fill="#2a5ea8" opacity=".85"/>
+<rect x="78" y="98" width="72" height="72" fill="#e8a317" opacity=".9"/>
+<polygon points="150,98 246,170 318,74 222,2" fill="#2e9d5b" opacity=".85"/></g>
+<rect x="150" y="158" width="12" height="12" fill="none" stroke="#1d2430" stroke-width="2"/>
+<g font-family="system-ui,sans-serif" font-weight="700" fill="#ffffff"><text x="114" y="145" font-size="26" text-anchor="middle">a²</text>
+<text x="198" y="229" font-size="30" text-anchor="middle">b²</text><text x="234" y="97" font-size="32" text-anchor="middle">c²</text></g>
+<text x="395" y="250" font-family="system-ui,sans-serif" font-size="26" font-weight="700" fill="#14345f" text-anchor="middle">a² + b² = c²</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+function plantillaActividades(){
+  const menu = pantallaNueva('Menú');
+  const acts = [
+    {nombre: 'Opción múltiple', emoji: '✅', color: '#2a5ea8', texto: '#ffffff',
+     el: () => Object.assign(FABRICA.quiz(), {x: 220, y: 110, w: 520, h: 330, pregunta: '¿Cuánto suman los ángulos interiores de un triángulo?', opciones: '90°\n180°\n270°\n360°', correcta: 2,
+       msjBien: '¡Correcto! Siempre suman 180°.', msjMal: 'No es esa. Probá de nuevo.', reintentar: true})},
+    {nombre: 'Ordenar la oración', emoji: '🔤', color: '#e8a317', texto: '#1d2430',
+     el: () => Object.assign(FABRICA.ordenar(), {x: 170, y: 130, w: 620, h: 290, consigna: 'Ordená las palabras para armar la definición', texto: 'Un cuadrado tiene cuatro lados iguales y cuatro ángulos rectos',
+       modo: 'palabras', msjBien: '¡Muy bien!', msjMal: 'Todavía no. Revisá el orden.'})},
+    {nombre: 'Ordenar los pasos', emoji: '🪜', color: '#2e9d5b', texto: '#ffffff',
+     el: () => Object.assign(FABRICA.ordenar(), {x: 120, y: 110, w: 720, h: 340, modo: 'lineas', consigna: 'Ordená los pasos para construir un triángulo equilátero con compás',
+       texto: 'Trazar un segmento AB\nCon centro en A y radio AB, trazar un arco\nCon centro en B y el mismo radio, trazar otro arco\nUnir el punto donde se cortan los arcos con A y con B',
+       msjBien: '¡Exacto! Así se construye.', msjMal: 'Todavía no. Pensá qué hace falta tener antes de cada paso.'})},
+    {nombre: 'Rompecabezas', emoji: '🧩', color: '#b8432f', texto: '#ffffff',
+     el: () => Object.assign(FABRICA.puzzle(), {x: 240, y: 110, w: 480, h: 320, src: imagenPitagoras(), filas: 3, columnas: 3, msjBien: '¡Lo armaste! Es el teorema de Pitágoras.'})}
+  ];
+  const pantallas = acts.map((a, i) => pantallaNueva(`Actividad ${i + 1}: ${a.nombre}`));
+
+  menu.fondo = '#faf7f0';
+  menu.elementos.push(
+    textoP({x: 60, y: 36, w: 840, h: 70, texto: 'Repaso de geometría', tam: 42, negrita: true, color: '#14345f', alinear: 'center'}),
+    textoP({x: 60, y: 104, w: 840, h: 44, texto: 'Elegí una actividad. Las podés hacer en el orden que quieras.', tam: 20, color: '#56637b', alinear: 'center'})
+  );
+  acts.forEach((a, i) => {
+    menu.elementos.push(Object.assign(FABRICA.boton(), {
+      x: 90 + (i % 2) * 400, y: 180 + Math.floor(i / 2) * 150, w: 380, h: 120, tam: 24, radio: 18, resalte: 'elevar',
+      texto: `${a.emoji}  ${i + 1}. ${a.nombre}`, relleno: a.color, color: a.texto, accion: accion({tipo: 'ir', destino: pantallas[i].id})
+    }));
+  });
+
+  acts.forEach((a, i) => {
+    const p = pantallas[i];
+    p.fondo = '#faf7f0';
+    const siguiente = i < acts.length - 1 ? pantallas[i + 1].id : menu.id;
+    p.elementos.push(
+      Object.assign(FABRICA.rect(), {x: 0, y: 0, w: 960, h: 80, relleno: a.color, radio: 0, texto: '', fijo: true}),
+      textoP({x: 40, y: 12, w: 880, h: 56, texto: `${a.emoji}  Actividad ${i + 1} de ${acts.length} · ${a.nombre}`, tam: 26, negrita: true, color: a.texto}),
+      a.el(),
+      botonIr(menu.id, {x: 40, y: 466, texto: '◀ Menú', relleno: '#ffffff', color: '#14345f', borde: 2, colorBorde: '#14345f'}),
+      botonIr(siguiente, {x: 720, y: 466, texto: i < acts.length - 1 ? 'Siguiente ▶' : 'Terminar ✓', relleno: '#14345f', color: '#ffffff'})
+    );
+  });
+
+  return {app: 'interactivo-aula', version: 1, titulo: 'Repaso de geometría', ancho: ANCHO, alto: ALTO, navegacion: false, letra: 'sistema',
+    pantallas: [menu].concat(pantallas)};
+}
+
+const PLANTILLAS = {
+  blanco: null,
+  escape: plantillaEscape,
+  actividades: plantillaActividades,
+  ejemplo: proyectoEjemplo
+};
+function usarPlantilla(clave){
+  $('#m-plantillas').hidden = true;
+  if (clave === 'blanco') { presentacionNueva(); return; }
+  antes();
+  proyecto = validar(PLANTILLAS[clave]());
+  actual = 0; elegir([]);
+  dibujarTodo(); guardarLocal(); marcarSinGuardar(false);
+  if (document.activeElement) document.activeElement.blur();
+  aviso('Plantilla lista: cambiá los textos y las respuestas por los tuyos. Si te arrepentís, Ctrl+Z vuelve atrás.');
 }
 
 function validar(d){
@@ -2205,7 +2380,10 @@ $('#b-cerrar-prev').onclick = cerrarPrev;
 $('#b-acerca').onclick = () => { $('#acerca').hidden = false; $('#b-cerrar-acerca').focus(); };
 $('#b-cerrar-acerca').onclick = () => { $('#acerca').hidden = true; };
 $('#acerca').addEventListener('click', e => { if (e.target.id === 'acerca') $('#acerca').hidden = true; });
-$('#b-nuevo').onclick = () => siHayCambios(presentacionNueva);
+$('#b-nuevo').onclick = () => siHayCambios(() => { $('#m-plantillas').hidden = false; $('#m-plantillas .plantilla').focus(); });
+document.querySelectorAll('[data-plantilla]').forEach(b => b.onclick = () => usarPlantilla(b.dataset.plantilla));
+$('#pl-cancelar').onclick = () => { $('#m-plantillas').hidden = true; };
+$('#m-plantillas').addEventListener('click', e => { if (e.target.id === 'm-plantillas') $('#m-plantillas').hidden = true; });
 // al cerrar la pestaña con cambios sin guardar, el navegador pregunta antes
 window.addEventListener('beforeunload', e => { if (sinGuardar) { e.preventDefault(); e.returnValue = ''; } });
 $('#titulo').addEventListener('focus', antes);
@@ -2218,6 +2396,7 @@ document.addEventListener('keydown', e => {
   if (!$('#m-vq').hidden) { if (e.key === 'Escape') cerrarPregunta(); return; }
   if (!$('#m-bancos').hidden) { if (e.key === 'Escape') $('#m-bancos').hidden = true; return; }
   if (!$('#m-cambios').hidden) { if (e.key === 'Escape') $('#c-cancelar').click(); return; }
+  if (!$('#m-plantillas').hidden) { if (e.key === 'Escape') $('#m-plantillas').hidden = true; return; }
   const mod = e.ctrlKey || e.metaKey, tecla = e.key.toLowerCase();
   if (mod && tecla === 's') { e.preventDefault(); guardarProyecto(); return; }
   if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
