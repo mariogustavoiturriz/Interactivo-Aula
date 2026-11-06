@@ -149,6 +149,7 @@ input[type=range]{width:100%}
   <button id="b-abrir" title="Abre un proyecto (.json) o un HTML exportado con esta herramienta">📂 Abrir</button>
   <button id="b-guardar" title="Descarga el proyecto para seguir editándolo (Ctrl+S)">💾 Guardar</button>
   <button id="b-prev" title="Probá la presentación como la van a ver tus estudiantes">▶ Probar</button>
+  <button id="b-scorm" title="Paquete para subir al aula virtual (Moodle, campus del INFD) que registra el avance y el puntaje">🎓 SCORM</button>
   <button id="b-exportar" class="prim" title="Genera un HTML que se abre en cualquier navegador, sin internet">⬇ Exportar HTML</button>
   <button id="b-acerca" aria-label="Ayuda y acerca de" title="Ayuda y acerca de">?</button>
 </header>
@@ -228,7 +229,7 @@ input[type=range]{width:100%}
 <div id="acerca" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="acerca-t">
   <div class="caja">
     <h2 id="acerca-t">Presentaciones interactivas para el aula</h2>
-    <p style="font-size:13px;color:var(--gris);margin-top:-6px">Versión 0.9 · 6 de noviembre de 2026</p>
+    <p style="font-size:13px;color:var(--gris);margin-top:-6px">Versión 1.0 · 6 de noviembre de 2026</p>
     <p>Editor libre para armar presentaciones con ventanas emergentes, zonas para tocar y navegación entre pantallas, al estilo de las herramientas comerciales pero sin cuentas, sin marcas de agua y sin depender de internet.</p>
     <p><b>Cómo se comparte:</b> con <b>Exportar HTML</b> obtenés un único archivo que se abre en cualquier navegador, en la compu o en el celular, y se puede subir a un aula virtual o pasar por pendrive. Ese mismo archivo se puede volver a abrir acá para seguir editándolo.</p>
     <p><b>Dónde quedan tus datos:</b> todo se procesa en tu navegador. Nada se sube a ningún servidor.</p>
@@ -248,6 +249,23 @@ input[type=range]{width:100%}
     <div class="botones"><button id="vid-archivo">Elegir archivo de video</button></div>
     <p class="nota">MP4 o WebM. Queda guardado dentro de la presentación y funciona sin internet, pero el archivo final pesa lo mismo que el video: conviene que sea corto (hasta unos 30 MB).</p>
     <div class="botones" style="justify-content:flex-end"><button id="vid-cancelar">Cancelar</button></div>
+  </div>
+</div>
+
+<div id="m-scorm" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-scorm-t">
+  <div class="caja">
+    <h2 id="m-scorm-t">Exportar para el aula virtual (SCORM)</h2>
+    <p>Genera un paquete .zip para subir como actividad SCORM en Moodle o en el campus del INFD. La plataforma registra el avance de cada estudiante, su puntaje y dónde quedó, para que pueda retomar.</p>
+    <p class="nota" id="sc-info"></p>
+    <label class="campo">Se considera terminada cuando…
+      <select id="sc-criterio"><option value="fin">Llega a la pantalla final</option><option value="pantallas">Recorre todas las pantallas</option><option value="actividades">Resuelve todas las actividades con puntaje</option></select></label>
+    <label class="campo" id="sc-fin-c">Pantalla final<select id="sc-fin"></select></label>
+    <div class="fila">
+      <label class="chk"><input type="checkbox" id="sc-usar-min"> Pedir un puntaje mínimo para aprobar</label>
+      <label class="campo">Mínimo (de 0 a 100)<input type="number" id="sc-minimo" min="0" max="100" value="60"></label>
+    </div>
+    <p class="nota">Cómo se calcula el puntaje: cada actividad vale lo mismo. La opción múltiple vale completa si se acierta a la primera y la mitad si se acierta después de equivocarse. El video con preguntas vale según las respuestas correctas a la primera.</p>
+    <div class="botones" style="justify-content:flex-end"><button id="sc-cancelar">Cancelar</button><button id="sc-ok" class="prim2">Descargar paquete</button></div>
   </div>
 </div>
 
@@ -504,7 +522,7 @@ function crearNodo(el, medios, vivo){
     s.fontSize = (el.tam || 20) + 'px'; s.overflow = 'auto';
     s.setProperty('--c', el.colorAct || '#2a5ea8');
   }
-  function resuelto(){ d.dispatchEvent(new CustomEvent('resuelto')); }
+  function resuelto(det){ d.dispatchEvent(new CustomEvent('resuelto', {detail: det || {}})); }
   function avisar(t){ [].forEach.call(document.querySelectorAll('.ia-toast'), function(x){ x.remove(); }); var a = nuevo('div', 'ia-toast', t); a.setAttribute('role', 'status'); document.body.appendChild(a); setTimeout(function(){ a.remove(); }, 2600); }
   function inventario(){ return window.__iaInventario || (window.__iaInventario = {}); }
   function mezclar(a){ for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -556,15 +574,16 @@ function crearNodo(el, medios, vivo){
     var ops = nuevo('div', 'act-ops'), fb = nuevo('div', 'act-fb'), botones = [];
     fb.setAttribute('aria-live', 'polite');
     var lista = String(el.opciones || '').split('\n').map(function(x){ return x.trim(); }).filter(Boolean);
-    var correcta = Number(el.correcta) || 1;
+    var correcta = Number(el.correcta) || 1, errores = 0;
     lista.forEach(function(t, i){
       var b = boton('act-btn', t);
       if (vivo) b.addEventListener('click', function(){
         if (i + 1 === correcta) {
           b.classList.add('ok'); fb.textContent = el.msjBien || '¡Correcto!'; fb.className = 'act-fb ok';
           botones.forEach(function(x){ x.disabled = true; });
-          resuelto();
+          resuelto({puntaje: errores ? 0.5 : 1});   // a la primera vale todo; después de equivocarse, la mitad
         } else {
+          errores++;
           b.classList.add('mal'); b.disabled = true;
           fb.textContent = el.msjMal || 'No es esa.'; fb.className = 'act-fb mal';
           if (!el.reintentar) botones.forEach(function(x, j){ x.disabled = true; if (j + 1 === correcta) x.classList.add('ok'); });
@@ -919,7 +938,7 @@ function crearNodo(el, medios, vivo){
       acc.appendChild(bOtra);
       tj.appendChild(acc);
       if (inp) inp.focus(); else bOtra.focus();
-      if (!avisado) { avisado = true; resuelto(); }
+      if (!avisado) { avisado = true; resuelto({puntaje: preg.length ? bien / preg.length : 1}); }
     }
 
     function arrancar(){ h = setInterval(revisar, 150); }
@@ -1002,6 +1021,7 @@ function reproductor(){
   function mostrar(i){
     if (i < 0 || i >= P.pantallas.length) return;
     actual = i;
+    if (window.__ia) window.__ia.pantalla(i);
     var p = P.pantallas[i];
     esc.innerHTML = '';
     esc.style.backgroundColor = p.fondo || '#ffffff';
@@ -1010,6 +1030,8 @@ function reproductor(){
       var n = crearNodo(el, P.medios || {}, true), a = el.accion;
       // actividades resueltas: pasan de pantalla si así se configuró
       var ex = el.exito;
+      // seguimiento SCORM (solo existe en los paquetes para aulas virtuales)
+      n.addEventListener('resuelto', function(e){ if (window.__ia) window.__ia.actividad(el.id, e.detail && e.detail.puntaje != null ? e.detail.puntaje : 1); });
       if (ex && ex.tipo && ex.tipo !== 'ninguna') n.addEventListener('resuelto', function(){
         var desde = actual;
         setTimeout(function(){
@@ -1057,7 +1079,7 @@ function reproductor(){
     if (e.key === 'ArrowLeft' || e.key === 'PageUp') mostrar(actual - 1);
   });
   window.addEventListener('resize', ajustar);
-  mostrar(P.inicio || 0); ajustar();
+  mostrar((window.__ia && window.__ia.inicio) || P.inicio || 0); ajustar();
 }
 
 const CSS_REPRODUCTOR = `html,body{margin:0;height:100%}
@@ -2440,7 +2462,7 @@ function letrasUsadas(){
   proyecto.pantallas.forEach(p => p.elementos.forEach(e => s.add(e.letra)));
   return [...s].filter(id => id && FUENTES[id]);
 }
-function generarHTML(desde){
+function generarHTML(desde, scorm){
   const datos = JSON.stringify(Object.assign({}, proyecto, {medios: mediosUsados()}, desde ? {inicio: desde} : {})).replace(/</g, '\\u003c');
   const fin = '<' + '/script>';
   const comentario = '<' + '!-- Hecho con Presentaciones interactivas para el aula (software libre, GNU GPL v3). Se puede volver a abrir en el editor para seguir editándolo. --' + '>';
@@ -2457,10 +2479,143 @@ ${cssFuentes(letrasUsadas())}</style></head>
 <div id="capa" hidden><div class="ventana" role="dialog" aria-modal="true" aria-labelledby="vt"><h2 id="vt"></h2><img id="vi" alt=""><p id="vx"></p><button id="vc">Cerrar</button></div></div>
 <script type="application/json" id="datos">${datos}${fin}
 <script>
+${scorm ? '(' + puenteSCORM.toString() + ')(' + JSON.stringify(scorm) + ');' : ''}
 ${crearNodo.toString()}
 (${reproductor.toString()})();
 ${fin}
 </body></html>`;
+}
+/* ================= SCORM 1.2 =================
+   El paquete es un .zip con el reproductor (index.html) y el manifiesto que piden las aulas virtuales.
+   puenteSCORM viaja dentro del paquete y le cuenta a la plataforma qué pasó. */
+function puenteSCORM(cfg){
+  function buscar(w){ for (var n = 0; w && n < 12; n++) { try { if (w.API) return w.API; } catch (e) {} if (w.parent === w) break; w = w.parent; } return null; }
+  var api = buscar(window) || (window.opener ? buscar(window.opener) : null);
+  var P = JSON.parse(document.getElementById('datos').textContent);
+  var EVAL = ['quiz', 'ordenar', 'puzzle', 'videoquiz', 'cerradura'], evaluables = [];
+  P.pantallas.forEach(function(p){ p.elementos.forEach(function(e){ if (EVAL.indexOf(e.tipo) >= 0) evaluables.push(e.id); }); });
+  function get(k){ try { return api ? String(api.LMSGetValue(k) || '') : ''; } catch (e) { return ''; } }
+  function set(k, v){ try { if (api) api.LMSSetValue(k, String(v)); } catch (e) {} }
+  function commit(){ try { if (api) api.LMSCommit(''); } catch (e) {} }
+  if (api) { try { if (String(api.LMSInitialize('')) === 'false') api = null; } catch (e) { api = null; } }
+  var vistas = {}, notas = {}, t0 = Date.now(), terminado = false;
+  try { var s = JSON.parse(get('cmi.suspend_data') || '{}'); vistas = s.v || {}; notas = s.n || {}; } catch (e) {}
+  var estado = get('cmi.core.lesson_status');
+  if (['completed', 'passed', 'failed'].indexOf(estado) < 0) { estado = 'incomplete'; set('cmi.core.lesson_status', 'incomplete'); }
+  var loc = parseInt(get('cmi.core.lesson_location'), 10);
+  function puntaje(){
+    if (!evaluables.length) return null;
+    var t = 0; evaluables.forEach(function(id){ t += notas[id] || 0; });
+    return Math.round(t / evaluables.length * 100);
+  }
+  function actualizar(){
+    var pj = puntaje();
+    if (pj !== null) { set('cmi.core.score.min', 0); set('cmi.core.score.max', 100); set('cmi.core.score.raw', pj); }
+    var completo = cfg.criterio === 'actividades' && evaluables.length ? evaluables.every(function(id){ return id in notas; })
+      : cfg.criterio === 'fin' ? !!vistas[cfg.fin]
+      : Object.keys(vistas).length >= P.pantallas.length;
+    if (completo || estado !== 'incomplete') {
+      if (cfg.minimo != null && pj !== null) estado = pj >= cfg.minimo ? 'passed' : (estado === 'passed' ? 'passed' : 'failed');
+      else estado = estado === 'incomplete' ? 'completed' : estado;
+      set('cmi.core.lesson_status', estado);
+    }
+    set('cmi.suspend_data', JSON.stringify({v: vistas, n: notas}).slice(0, 4000));
+    commit();
+  }
+  function tiempo(){
+    var s = Math.round((Date.now() - t0) / 1000), d2 = function(n){ return ('0' + n).slice(-2); };
+    return ('000' + Math.floor(s / 3600)).slice(-4) + ':' + d2(Math.floor(s / 60) % 60) + ':' + d2(s % 60);
+  }
+  function cerrar(){
+    if (terminado || !api) return; terminado = true;
+    set('cmi.core.session_time', tiempo()); set('cmi.core.exit', estado === 'incomplete' ? 'suspend' : '');
+    commit(); try { api.LMSFinish(''); } catch (e) {}
+  }
+  window.addEventListener('pagehide', cerrar); window.addEventListener('beforeunload', cerrar);
+  window.__ia = {
+    conectado: !!api,
+    inicio: loc >= 0 && loc < P.pantallas.length ? loc : 0,
+    pantalla: function(i){ vistas[i] = 1; set('cmi.core.lesson_location', i); actualizar(); },
+    actividad: function(id, f){ if (evaluables.indexOf(id) < 0) return; notas[id] = Math.max(notas[id] || 0, f); actualizar(); }
+  };
+}
+/* zip sin comprimir (método "store"): alcanza para el paquete y no necesita bibliotecas */
+function crearZip(archivos){
+  const tabla = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; tabla[n] = c >>> 0; }
+  const crc = b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = tabla[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  const enc = new TextEncoder(), f = new Date();
+  const hora = (f.getHours() << 11) | (f.getMinutes() << 5) | (f.getSeconds() >> 1);
+  const dia = ((f.getFullYear() - 1980) << 9) | ((f.getMonth() + 1) << 5) | f.getDate();
+  const partes = [], centrales = []; let pos = 0;
+  archivos.forEach(a => {
+    const nom = enc.encode(a.nombre), dat = typeof a.datos === 'string' ? enc.encode(a.datos) : a.datos, c = crc(dat);
+    const loc = new DataView(new ArrayBuffer(30));
+    [[0, 0x04034b50, 4], [4, 20, 2], [6, 0x0800, 2], [8, 0, 2], [10, hora, 2], [12, dia, 2], [14, c, 4], [18, dat.length, 4], [22, dat.length, 4], [26, nom.length, 2], [28, 0, 2]]
+      .forEach(([o, v, t]) => t === 4 ? loc.setUint32(o, v, true) : loc.setUint16(o, v, true));
+    const cen = new DataView(new ArrayBuffer(46));
+    [[0, 0x02014b50, 4], [4, 20, 2], [6, 20, 2], [8, 0x0800, 2], [10, 0, 2], [12, hora, 2], [14, dia, 2], [16, c, 4], [20, dat.length, 4], [24, dat.length, 4], [28, nom.length, 2],
+     [30, 0, 2], [32, 0, 2], [34, 0, 2], [36, 0, 2], [38, 0, 4], [42, pos, 4]].forEach(([o, v, t]) => t === 4 ? cen.setUint32(o, v, true) : cen.setUint16(o, v, true));
+    partes.push(new Uint8Array(loc.buffer), nom, dat); centrales.push(new Uint8Array(cen.buffer), nom);
+    pos += 30 + nom.length + dat.length;
+  });
+  const tam = centrales.reduce((s, x) => s + x.length, 0);
+  const finc = new DataView(new ArrayBuffer(22));
+  [[0, 0x06054b50, 4], [4, 0, 2], [6, 0, 2], [8, archivos.length, 2], [10, archivos.length, 2], [12, tam, 4], [16, pos, 4], [20, 0, 2]]
+    .forEach(([o, v, t]) => t === 4 ? finc.setUint32(o, v, true) : finc.setUint16(o, v, true));
+  return new Blob([...partes, ...centrales, new Uint8Array(finc.buffer)], {type: 'application/zip'});
+}
+function manifiestoSCORM(titulo, minimo){
+  const t = escHTML(titulo), id = 'IA-' + uid();
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="${id}" version="1.0"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <metadata><schema>ADL SCORM</schema><schemaversion>1.2</schemaversion></metadata>
+  <organizations default="ORG-1">
+    <organization identifier="ORG-1">
+      <title>${t}</title>
+      <item identifier="ITEM-1" identifierref="RES-1" isvisible="true">
+        <title>${t}</title>${minimo != null ? `\n        <adlcp:masteryscore>${minimo}</adlcp:masteryscore>` : ''}
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="RES-1" type="webcontent" adlcp:scormtype="sco" href="index.html">
+      <file href="index.html"/>
+    </resource>
+  </resources>
+</manifest>`;
+}
+function abrirSCORM(){
+  const n = proyecto.pantallas.reduce((s, p) => s + p.elementos.filter(e => ['quiz', 'ordenar', 'puzzle', 'videoquiz', 'cerradura'].includes(e.tipo)).length, 0);
+  $('#sc-info').textContent = n
+    ? `Tiene ${n} ${n === 1 ? 'actividad que cuenta' : 'actividades que cuentan'} para el puntaje (opción múltiple, ordenar, rompecabezas, video con preguntas y cerraduras).`
+    : 'No tiene actividades con puntaje: la plataforma va a registrar solo si la recorrió completa.';
+  // pantalla final sugerida: la última a la que no se llega porque se terminó el tiempo (en un escape room, la de ganar)
+  const porTiempo = new Set();
+  proyecto.pantallas.forEach(p => p.elementos.forEach(e => { if (e.tipo === 'temporizador' && e.exito && e.exito.tipo === 'ir') porTiempo.add(e.exito.destino); }));
+  let sug = proyecto.pantallas.length - 1;
+  for (let i = proyecto.pantallas.length - 1; i >= 0; i--) if (!porTiempo.has(proyecto.pantallas[i].id)) { sug = i; break; }
+  $('#sc-fin').innerHTML = proyecto.pantallas.map((p, i) => `<option value="${i}"${i === sug ? ' selected' : ''}>${i + 1}. ${escHTML(p.nombre)}</option>`).join('');
+  $('#sc-criterio').value = 'fin';
+  [...$('#sc-criterio').options].forEach(o => { if (o.value === 'actividades') o.disabled = !n; });
+  $('#sc-fin-c').hidden = false;
+  $('#sc-minimo').disabled = !n;
+  $('#m-scorm').hidden = false; $('#sc-ok').focus();
+}
+function exportarSCORM(){
+  const min = $('#sc-usar-min').checked && !$('#sc-minimo').disabled ? Math.max(0, Math.min(100, parseInt($('#sc-minimo').value, 10) || 0)) : null;
+  const cfg = {criterio: $('#sc-criterio').value, minimo: min, fin: parseInt($('#sc-fin').value, 10)};
+  const titulo = proyecto.titulo || 'Presentación interactiva';
+  const zip = crearZip([{nombre: 'imsmanifest.xml', datos: manifiestoSCORM(titulo, min)}, {nombre: 'index.html', datos: generarHTML(0, cfg)}]);
+  const url = URL.createObjectURL(zip);
+  const a = document.createElement('a'); a.href = url; a.download = nombreArchivo() + '-scorm.zip';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+  $('#m-scorm').hidden = true;
+  aviso('Paquete SCORM listo en tus descargas: subilo al aula virtual sin descomprimirlo');
 }
 function exportar(){
   descargar(nombreArchivo() + '.html', generarHTML(), 'text/html');
@@ -2493,6 +2648,11 @@ $('#b-rehacer').onclick = rehacerFn;
 $('#b-guardar').onclick = guardarProyecto;
 $('#b-abrir').onclick = () => siHayCambios(abrirProyecto);
 $('#b-exportar').onclick = exportar;
+$('#b-scorm').onclick = abrirSCORM;
+$('#sc-ok').onclick = exportarSCORM;
+$('#sc-criterio').addEventListener('input', () => { $('#sc-fin-c').hidden = $('#sc-criterio').value !== 'fin'; });
+$('#sc-cancelar').onclick = () => { $('#m-scorm').hidden = true; };
+$('#m-scorm').addEventListener('click', e => { if (e.target.id === 'm-scorm') $('#m-scorm').hidden = true; });
 $('#b-prev').onclick = vistaPrevia;
 $('#b-cerrar-prev').onclick = cerrarPrev;
 $('#b-acerca').onclick = () => { $('#acerca').hidden = false; $('#b-cerrar-acerca').focus(); };
@@ -2538,6 +2698,7 @@ document.addEventListener('keydown', e => {
   if (!$('#m-bancos').hidden) { if (e.key === 'Escape') $('#m-bancos').hidden = true; return; }
   if (!$('#m-cambios').hidden) { if (e.key === 'Escape') $('#c-cancelar').click(); return; }
   if (!$('#m-inicio').hidden) { if (e.key === 'Escape') cerrarInicio(); return; }
+  if (!$('#m-scorm').hidden) { if (e.key === 'Escape') $('#m-scorm').hidden = true; return; }
   const mod = e.ctrlKey || e.metaKey, tecla = e.key.toLowerCase();
   if (mod && tecla === 's') { e.preventDefault(); guardarProyecto(); return; }
   if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;

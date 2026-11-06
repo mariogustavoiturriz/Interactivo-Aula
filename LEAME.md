@@ -21,6 +21,12 @@ El editor guarda solo el trabajo en el navegador mientras se usa. Con **Guardar*
 - Nueve tipografías libres pensadas para el aula, incluidas en el archivo: Andika, Atkinson Hyperlegible, Lexend, OpenDyslexic, Comic Neue, Fredoka, Patrick Hand, Merriweather y JetBrains Mono.
 - Acceso directo a bancos libres de imágenes y videos con filtros de contenido.
 
+## Para el aula virtual (SCORM)
+
+Con **🎓 SCORM** el editor genera un paquete SCORM 1.2 (.zip) que se sube como actividad en Moodle o en el campus del INFD, sin descomprimirlo. La plataforma registra el avance de cada estudiante, su puntaje y la pantalla donde quedó, para que pueda retomar. Se elige cuándo se considera terminada (al llegar a una pantalla final, al recorrer todas o al resolver todas las actividades) y, si se quiere, un puntaje mínimo para aprobar.
+
+Cada actividad con puntaje vale lo mismo: opción múltiple (completa a la primera, la mitad si se equivocó antes), ordenar, rompecabezas, cerraduras y video con preguntas (según las respuestas correctas a la primera).
+
 ## Qué necesita internet
 
 Casi nada. Funciona todo sin conexión, salvo los videos de YouTube y los enlaces externos. Los videos de YouTube, además, se ven incrustados solo cuando la presentación está publicada en una página web (GitHub Pages, aula virtual). Abierta desde la compu, aparece un botón que abre el video en YouTube. Con videos propios funciona siempre.
@@ -29,6 +35,7 @@ Casi nada. Funciona todo sin conexión, salvo los videos de YouTube y los enlace
 
 - `index.html`: el editor completo, en un solo archivo.
 - `ejemplos/ejemplo.html`: una presentación sencilla de ejemplo.
+- `ejemplos/escape-room-scorm.zip`: el mismo escape room como paquete SCORM, para probarlo en el aula virtual (aprueba con 70).
 - `ejemplos/escape-room.html`: **El laboratorio secreto**, un escape room de matemática que usa linterna, llave y cerradura, opción múltiple, ordenar pasos, rompecabezas, temporizador y candado con código. También se puede abrir desde el editor (Nuevo → Escape room) para ver cómo está armado.
 
 ## Licencia
