@@ -67,7 +67,28 @@ input[type=range]{width:100%}
 .ed .el *{pointer-events:none}
 .ed .el-linterna{pointer-events:none;opacity:.5!important}
 .ed .el-linterna .etiqueta{display:block;pointer-events:auto;position:absolute;top:8px;left:8px;background:#fff;color:#1d2430;padding:5px 12px;border-radius:8px;font:600 15px system-ui,sans-serif;cursor:move}
-.herr .act{background:#f6f2e8}
+.pestanas{display:flex;align-items:flex-end;gap:4px;padding:6px 14px 0;background:#fff;flex-wrap:wrap}
+.pestana{border:0;border-bottom:3px solid transparent;border-radius:10px 10px 0 0;background:none;font-weight:600;color:var(--gris);padding:7px 14px}
+.pestana:hover{background:var(--suave)}
+.pestana[aria-selected="true"]{color:var(--azul);border-bottom-color:var(--acento);background:var(--suave)}
+.edicion{margin-left:auto;display:flex;gap:4px;align-items:center;padding-bottom:4px}
+.edicion .sep{width:1px;height:22px;background:var(--borde);margin:0 2px}
+.cinta{display:flex;gap:6px;padding:6px 14px 8px;background:var(--suave);border-bottom:1px solid var(--borde);flex-wrap:wrap;align-items:stretch}
+.grupo{display:flex;gap:2px;align-items:stretch;position:relative;padding:14px 8px 0;border-right:1px solid var(--borde)}
+.grupo:last-child{border-right:0}
+.gtit{position:absolute;top:0;left:10px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--gris)}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:76px;padding:6px 8px;border:1px solid transparent;background:none;font-size:12.5px;border-radius:10px;line-height:1.15;white-space:normal;max-width:96px;text-align:center}
+.tile .ic{font-size:23px;line-height:1}
+.tile:hover{background:#fff;border-color:var(--borde);box-shadow:0 2px 6px rgba(20,52,95,.08)}
+#centro{position:relative}
+#vacio{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,.92);border:2px dashed var(--borde);border-radius:14px;padding:16px 22px;color:var(--gris);text-align:center;pointer-events:none;max-width:340px;font-size:14px}
+#vacio b{display:block;color:var(--azul);font-size:16px;margin-bottom:4px}
+.ed .el:hover:not(.multi):not(.fijo){outline:calc(1px / var(--k,1)) dashed var(--azul-2)}
+.inicio-ops{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+.inicio-ops button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:14px;border:2px solid var(--borde);background:#fff;white-space:normal;text-align:center;font-size:13px;color:var(--gris)}
+.inicio-ops button b{color:var(--azul);font-size:15px}
+.inicio-ops button .ic{font-size:34px;line-height:1}
+.inicio-ops button:hover{border-color:var(--azul-2);background:#f4f8ff}
 #b-varios[aria-pressed="true"]{background:var(--acento);border-color:var(--acento);font-weight:700}
 .ed .el.fijo{cursor:default}
 .ed .el.fijo.sel-fijo{outline:calc(2px / var(--k,1)) dashed var(--gris)}
@@ -108,13 +129,6 @@ input[type=range]{width:100%}
 .banco .lic{color:var(--gris)}
 .banco .botones{margin-top:6px}
 .caja ul{padding-left:18px;font-size:13.5px;margin:6px 0}
-.plantillas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.plantilla{white-space:normal;min-width:0;width:100%;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;text-align:left;padding:12px 14px;border-radius:12px;align-items:start;line-height:1.35}
-.plantilla .pl-ico{grid-row:span 2;font-size:28px;line-height:1}
-.plantilla b{font-size:16px;color:var(--azul)}
-.plantilla span:last-child{font-size:13px;color:var(--gris)}
-.plantilla:hover{border-color:var(--azul-2)}
-@media (max-width:600px){.plantillas{grid-template-columns:1fr}}
 .caja li{margin-bottom:4px}
 @media (max-width:900px){
   body{height:auto;min-height:100%}
@@ -129,43 +143,60 @@ input[type=range]{width:100%}
 <body>
 <header class="barra">
   <span class="logo">Interactivo · Aula</span>
-  <input id="titulo" type="text" aria-label="Título de la presentación " placeholder="Título de la presentación">
-  <button id="b-nuevo" title="Empezar en blanco o desde una plantilla (escape room, set de actividades)">Nuevo</button>
-  <button id="b-abrir" title="Abre un proyecto (.json) o un HTML exportado con esta herramienta">Abrir</button>
-  <button id="b-guardar" title="Descarga el proyecto para seguir editándolo (Ctrl+S)">Guardar</button>
-  <button id="b-prev">▶ Vista previa</button>
-  <button id="b-exportar" class="prim" title="Genera un HTML que se abre en cualquier navegador, sin internet">Exportar HTML</button>
-  <button id="b-acerca" aria-label="Acerca de">?</button>
+  <input id="titulo" type="text" aria-label="Título de la presentación" placeholder="Escribí acá el título de tu presentación">
+  <button id="b-nuevo" title="Empezar otra presentación o abrir un ejemplo">📄 Nuevo</button>
+  <button id="b-abrir" title="Abre un proyecto (.json) o un HTML exportado con esta herramienta">📂 Abrir</button>
+  <button id="b-guardar" title="Descarga el proyecto para seguir editándolo (Ctrl+S)">💾 Guardar</button>
+  <button id="b-prev" title="Probá la presentación como la van a ver tus estudiantes">▶ Probar</button>
+  <button id="b-exportar" class="prim" title="Genera un HTML que se abre en cualquier navegador, sin internet">⬇ Exportar HTML</button>
+  <button id="b-acerca" aria-label="Ayuda y acerca de" title="Ayuda y acerca de">?</button>
 </header>
 
-<div class="herr" role="toolbar" aria-label="Herramientas">
-  <span class="rot">Agregar:</span>
-  <button data-agregar="texto">T Texto</button>
-  <button id="b-img">🖼 Imagen</button>
-  <button id="b-video">🎬 Video</button>
-  <button id="b-bancos" title="Buscar imágenes y videos libres en bancos seleccionados">🔎 Bancos libres</button>
-  <button data-agregar="rect">▭ Rectángulo</button>
-  <button data-agregar="circulo">◯ Círculo</button>
-  <button data-agregar="boton">▣ Botón</button>
-  <button data-agregar="zona" title="Zona invisible para tocar encima de una imagen">⬚ Zona interactiva</button>
-  <span class="sep"></span>
-  <button id="b-deshacer" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">↶</button>
-  <button id="b-rehacer" title="Rehacer (Ctrl+Y)" aria-label="Rehacer">↷</button>
-  <button id="b-copiar" title="Copiar (Ctrl+C)" aria-label="Copiar">⧉</button>
-  <button id="b-pegar" title="Pegar (Ctrl+V), también en otra pantalla" aria-label="Pegar">📋</button>
-  <button id="b-todos" title="Elegir todo (Ctrl+A)" aria-label="Elegir todo">⬚</button>
-  <button id="b-varios" aria-pressed="false" title="Elegir varios objetos con clics simples, sin tener que apretar Mayús">☑ Varios</button>
+<div class="pestanas" role="tablist" aria-label="Herramientas">
+  <button class="pestana" role="tab" id="t-cont" aria-selected="true" aria-controls="c-cont">➕ Contenido</button>
+  <button class="pestana" role="tab" id="t-act" aria-selected="false" aria-controls="c-act">🎲 Actividades y juegos</button>
+  <div class="edicion" role="toolbar" aria-label="Edición">
+    <button id="b-deshacer" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">↶</button>
+    <button id="b-rehacer" title="Rehacer (Ctrl+Y)" aria-label="Rehacer">↷</button>
+    <span class="sep"></span>
+    <button id="b-copiar" title="Copiar (Ctrl+C)" aria-label="Copiar">⧉</button>
+    <button id="b-pegar" title="Pegar (Ctrl+V), también en otra pantalla" aria-label="Pegar">📋</button>
+    <span class="sep"></span>
+    <button id="b-todos" title="Elegir todo (Ctrl+A)" aria-label="Elegir todo">⬚</button>
+    <button id="b-varios" aria-pressed="false" title="Elegir varios objetos con clics simples, sin tener que apretar Mayús">☑ Varios</button>
+  </div>
 </div>
-<div class="herr" role="toolbar" aria-label="Actividades">
-  <span class="rot">Actividades:</span>
-  <button class="act" data-agregar="quiz">✅ Opción múltiple</button>
-  <button class="act" data-agregar="ordenar">🔤 Ordenar palabras</button>
-  <button class="act" data-agregar="puzzle">🧩 Rompecabezas</button>
-  <button class="act" data-agregar="temporizador">⏱ Temporizador</button>
-  <button class="act" data-agregar="llave" title="Objeto que se guarda al tocarlo y abre una cerradura">🗝 Llave</button>
-  <button class="act" data-agregar="cerradura" title="Se abre con una llave o con un código">🔒 Cerradura</button>
-  <button class="act" data-agregar="linterna" title="Oscurece la pantalla y se descubre con el puntero">🔦 Linterna</button>
-  <button class="act" id="b-videoquiz" title="El video se detiene en los momentos que elijas y hace una pregunta">🎬 Video con preguntas</button>
+<div class="cinta" id="c-cont" role="tabpanel" aria-labelledby="t-cont">
+  <div class="grupo"><span class="gtit">Escribir</span>
+    <button class="tile" data-agregar="texto" title="Un cuadro de texto"><span class="ic">🔤</span>Texto</button>
+    <button class="tile" data-agregar="boton" title="Un botón que hace algo al tocarlo"><span class="ic">🔘</span>Botón</button>
+  </div>
+  <div class="grupo"><span class="gtit">Multimedia</span>
+    <button class="tile" id="b-img" title="Una imagen de tu compu (también podés pegarla o arrastrarla)"><span class="ic">🖼️</span>Imagen</button>
+    <button class="tile" id="b-video" title="Un video propio o de YouTube"><span class="ic">🎬</span>Video</button>
+    <button class="tile" id="b-bancos" title="Buscar imágenes y videos libres en bancos seleccionados"><span class="ic">🔎</span>Bancos libres</button>
+  </div>
+  <div class="grupo"><span class="gtit">Formas</span>
+    <button class="tile" data-agregar="rect" title="Rectángulo"><span class="ic">▭</span>Rectángulo</button>
+    <button class="tile" data-agregar="circulo" title="Círculo"><span class="ic">◯</span>Círculo</button>
+    <button class="tile" data-agregar="zona" title="Zona invisible para tocar encima de una imagen"><span class="ic">👆</span>Zona para tocar</button>
+  </div>
+</div>
+<div class="cinta" id="c-act" role="tabpanel" aria-labelledby="t-act" hidden>
+  <div class="grupo"><span class="gtit">Preguntas</span>
+    <button class="tile act" data-agregar="quiz" title="Pregunta con varias opciones"><span class="ic">✅</span>Opción múltiple</button>
+    <button class="tile act" data-agregar="ordenar" title="Ordenar palabras o pasos"><span class="ic">🔀</span>Ordenar</button>
+    <button class="tile act" id="b-videoquiz" title="El video se detiene en los momentos que elijas y hace una pregunta"><span class="ic">📺</span>Video con preguntas</button>
+  </div>
+  <div class="grupo"><span class="gtit">Juegos</span>
+    <button class="tile act" data-agregar="puzzle" title="Rompecabezas con una imagen"><span class="ic">🧩</span>Rompecabezas</button>
+    <button class="tile act" data-agregar="temporizador" title="Cuenta regresiva"><span class="ic">⏱️</span>Temporizador</button>
+    <button class="tile act" data-agregar="linterna" title="Oscurece la pantalla y se descubre con el puntero"><span class="ic">🔦</span>Linterna</button>
+  </div>
+  <div class="grupo"><span class="gtit">Escape room</span>
+    <button class="tile act" data-agregar="llave" title="Objeto que se guarda al tocarlo y abre una cerradura"><span class="ic">🗝️</span>Llave</button>
+    <button class="tile act" data-agregar="cerradura" title="Se abre con una llave o con un código"><span class="ic">🔒</span>Cerradura</button>
+  </div>
 </div>
 
 <main>
@@ -178,10 +209,12 @@ input[type=range]{width:100%}
       <button id="p-subir" aria-label="Subir pantalla">↑ Subir</button>
       <button id="p-bajar" aria-label="Bajar pantalla">↓ Bajar</button>
       <button id="p-borrar" style="grid-column:span 2">Borrar pantalla</button>
+      <button id="p-probar" class="prim2" style="grid-column:span 2" title="Probá la presentación empezando por esta pantalla">▶ Probar esta pantalla</button>
     </div>
   </aside>
   <section id="centro" aria-label="Lienzo">
     <div id="marco"><div id="escena" class="escena ed"></div></div>
+    <div id="vacio" hidden><b>Esta pantalla está vacía</b>Agregá contenido con los botones de arriba, o arrastrá una imagen hasta acá.</div>
   </section>
   <aside id="panel" aria-label="Propiedades"></aside>
 </main>
@@ -194,7 +227,7 @@ input[type=range]{width:100%}
 <div id="acerca" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="acerca-t">
   <div class="caja">
     <h2 id="acerca-t">Presentaciones interactivas para el aula</h2>
-    <p style="font-size:13px;color:var(--gris);margin-top:-6px">Versión 0.9 · 4 de noviembre de 2026</p>
+    <p style="font-size:13px;color:var(--gris);margin-top:-6px">Versión 0.9 · 6 de noviembre de 2026</p>
     <p>Editor libre para armar presentaciones con ventanas emergentes, zonas para tocar y navegación entre pantallas, al estilo de las herramientas comerciales pero sin cuentas, sin marcas de agua y sin depender de internet.</p>
     <p><b>Cómo se comparte:</b> con <b>Exportar HTML</b> obtenés un único archivo que se abre en cualquier navegador, en la compu o en el celular, y se puede subir a un aula virtual o pasar por pendrive. Ese mismo archivo se puede volver a abrir acá para seguir editándolo.</p>
     <p><b>Dónde quedan tus datos:</b> todo se procesa en tu navegador. Nada se sube a ningún servidor.</p>
@@ -217,17 +250,18 @@ input[type=range]{width:100%}
   </div>
 </div>
 
-<div id="m-plantillas" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-plantillas-t">
+<div id="m-inicio" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-inicio-t">
   <div class="caja ancha">
-    <h2 id="m-plantillas-t">Empezar una presentación nueva</h2>
-    <p style="margin-top:-4px">Elegí cómo arrancar. Las plantillas vienen armadas con un ejemplo de Matemática para que cambies los textos y las respuestas por los tuyos.</p>
-    <div class="plantillas">
-      <button class="plantilla" data-plantilla="escape"><span class="pl-ico" aria-hidden="true">🔐</span><b>Escape room</b><span>Seis pantallas: portada, cuatro candados (pregunta, código, llave con linterna y ordenar pasos) y salida. Solo se avanza resolviendo.</span></button>
-      <button class="plantilla" data-plantilla="actividades"><span class="pl-ico" aria-hidden="true">🧭</span><b>Set de actividades</b><span>Un menú con cuatro actividades (opción múltiple, ordenar palabras, ordenar pasos y rompecabezas) que se hacen en el orden que quieran.</span></button>
-      <button class="plantilla" data-plantilla="blanco"><span class="pl-ico" aria-hidden="true">📄</span><b>En blanco</b><span>Una sola pantalla vacía.</span></button>
-      <button class="plantilla" data-plantilla="ejemplo"><span class="pl-ico" aria-hidden="true">✨</span><b>Presentación de ejemplo</b><span>Portada y una pantalla con ventanas emergentes.</span></button>
+    <h2 id="m-inicio-t">¡Hola! ¿Qué querés hacer?</h2>
+    <p style="margin:0;color:var(--gris)">Armá presentaciones con ventanas, videos, preguntas y juegos. Todo queda en tu compu y funciona sin internet.</p>
+    <div class="inicio-ops">
+      <button id="i-blanco"><span class="ic">📄</span><b>Empezar en blanco</b>Una presentación nueva, vacía</button>
+      <button id="i-abrir"><span class="ic">📂</span><b>Abrir</b>Un proyecto guardado o un HTML exportado</button>
+      <button id="i-basico"><span class="ic">✨</span><b>Ejemplo sencillo</b>Dos pantallas para ver cómo funciona</button>
+      <button id="i-escape"><span class="ic">🗝️</span><b>Escape room</b>Un juego completo con todas las actividades, para mirarlo por dentro</button>
     </div>
-    <div class="botones" style="justify-content:flex-end;margin-top:12px"><button id="pl-cancelar">Cancelar</button></div>
+    <label class="chk"><input type="checkbox" id="i-nomostrar"> No mostrar esta ventana al abrir el editor (sigue disponible en Nuevo)</label>
+    <div class="botones" style="justify-content:flex-end"><button id="i-cerrar">Seguir con lo que estaba</button></div>
   </div>
 </div>
 
@@ -329,6 +363,7 @@ const CSS_ESCENA = `.escena{position:relative;overflow:hidden;background-size:co
 @keyframes balanceo{25%{rotate:-5deg}75%{rotate:5deg}}
 @media (prefers-reduced-motion:reduce){.el{transition:none}.res-girar:hover{animation:none}}
 .el-act{flex-direction:column;gap:10px;padding:14px 16px;border-radius:14px;box-shadow:0 4px 14px rgba(20,52,95,.15);line-height:1.3}
+.el-act>*{flex-shrink:0}
 .act-consigna{font-weight:700;white-space:pre-wrap}
 .act-ops{display:flex;flex-direction:column;gap:8px}
 .act-btn{font:inherit;border:2px solid var(--c);background:#fff;color:#1d2430;border-radius:10px;padding:8px 12px;text-align:left;cursor:pointer;transition:background-color .15s}
@@ -1019,7 +1054,7 @@ function reproductor(){
     if (e.key === 'ArrowLeft' || e.key === 'PageUp') mostrar(actual - 1);
   });
   window.addEventListener('resize', ajustar);
-  mostrar(0); ajustar();
+  mostrar(P.inicio || 0); ajustar();
 }
 
 const CSS_REPRODUCTOR = `html,body{margin:0;height:100%}
@@ -1145,158 +1180,100 @@ function proyectoEjemplo(){
   return {app: 'interactivo-aula', version: 1, titulo: 'Mi presentación interactiva', ancho: ANCHO, alto: ALTO, navegacion: true, pantallas: [p1, p2]};
 }
 
-/* ---------- plantillas: escape room y set de actividades ---------- */
-// Cada plantilla arma un proyecto completo con los mismos elementos del editor, listo para cambiarle los textos.
-function textoP(datos){ return Object.assign(FABRICA.texto(), datos); }
-function botonIr(destino, datos){ return Object.assign(FABRICA.boton(), {w: 200, h: 56, tam: 20, accion: accion({tipo: 'ir', destino})}, datos); }
-function botonPista(texto){
-  return Object.assign(FABRICA.boton(), {x: 790, y: 24, w: 146, h: 48, tam: 18, texto: '💡 Pista', relleno: '#fff4d6', color: '#5a4300', borde: 2, colorBorde: '#e8a317',
-    accion: accion({tipo: 'ventana', titulo: 'Pista', texto})});
-}
+/* ---------- ejemplo completo: escape room de matemática que usa todas las actividades ---------- */
+function svgURL(s){ return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s); }
+const SVG_BIBLIOTECA = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+<rect width="960" height="540" fill="#3b2f4a"/><rect y="400" width="960" height="140" fill="#5a4030"/>
+<g fill="#4a3a5c"><rect x="0" y="0" width="960" height="18"/></g>
+<rect x="40" y="70" width="250" height="330" fill="#6b4a2f" stroke="#3a2614" stroke-width="8"/>
+<g stroke="#3a2614" stroke-width="8"><line x1="40" y1="150" x2="290" y2="150"/><line x1="40" y1="232" x2="290" y2="232"/><line x1="40" y1="314" x2="290" y2="314"/></g>
+<g>${[[60,'#c0392b'],[82,'#2a5ea8'],[104,'#e8a317'],[130,'#2e9d5b'],[152,'#8e44ad'],[180,'#c0392b'],[206,'#16a085'],[232,'#e67e22'],[256,'#2a5ea8']].map(([x,c],i)=>`<rect x="${x}" y="${88 + (i%2)*6}" width="18" height="${58 - (i%2)*6}" fill="${c}"/><rect x="${x+4}" y="${170 + (i%3)*5}" width="18" height="${58 - (i%3)*5}" fill="${c}"/><rect x="${x+2}" y="${252 + (i%2)*8}" width="18" height="${58 - (i%2)*8}" fill="${c}"/>`).join('')}</g>
+<rect x="330" y="290" width="330" height="22" fill="#7a5233"/><rect x="345" y="312" width="20" height="100" fill="#5c3d24"/><rect x="625" y="312" width="20" height="100" fill="#5c3d24"/>
+<rect x="420" y="250" width="70" height="40" fill="#e9dfc4" transform="rotate(-6 455 270)"/><circle cx="590" cy="265" r="22" fill="#cfd8e6" opacity=".8"/><rect x="584" y="230" width="12" height="16" fill="#cfd8e6"/>
+<rect x="400" y="80" width="190" height="130" fill="#1c2a44" stroke="#6b4a2f" stroke-width="10"/><circle cx="545" cy="115" r="14" fill="#f5f0d0"/><g fill="#fff"><circle cx="430" cy="110" r="2"/><circle cx="470" cy="150" r="2"/><circle cx="510" cy="100" r="1.5"/><circle cx="455" cy="185" r="1.5"/></g>
+<line x1="495" y1="80" x2="495" y2="210" stroke="#6b4a2f" stroke-width="6"/><line x1="400" y1="145" x2="590" y2="145" stroke="#6b4a2f" stroke-width="6"/>
+<rect x="730" y="110" width="170" height="290" fill="#4e3421" stroke="#2c1c10" stroke-width="8"/><rect x="752" y="135" width="126" height="105" fill="#5d3f28"/><rect x="752" y="262" width="126" height="105" fill="#5d3f28"/>
+<text x="815" y="100" font-family="sans-serif" font-size="20" fill="#e9dfc4" text-anchor="middle">LABORATORIO</text>
+<ellipse cx="200" cy="470" rx="120" ry="22" fill="#7a2f2f" opacity=".7"/></svg>`;
+const SVG_MAPA = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+<rect width="600" height="400" fill="#ecdcb0"/><rect x="12" y="12" width="576" height="376" fill="none" stroke="#8b6b3a" stroke-width="6" stroke-dasharray="14 8"/>
+<path d="M0 300 C120 240 180 330 300 260 S470 200 600 250" fill="none" stroke="#4a86c5" stroke-width="22" opacity=".8"/>
+<g fill="#5f8f4a"><path d="M70 120 l30-50 30 50z"/><path d="M110 140 l26-44 26 44z"/><path d="M470 90 l30-50 30 50z"/><path d="M510 115 l24-40 24 40z"/></g>
+<g stroke="#8b6b3a" stroke-width="3" fill="none" stroke-dasharray="8 8"><path d="M90 200 C180 170 230 150 300 160"/></g>
+<text x="300" y="215" font-family="Georgia,serif" font-size="170" font-weight="700" fill="#b03a2e" text-anchor="middle" opacity=".9">7</text>
+<g stroke="#b03a2e" stroke-width="10" stroke-linecap="round"><line x1="455" y1="300" x2="495" y2="340"/><line x1="495" y1="300" x2="455" y2="340"/></g>
+<g transform="translate(520 60)" font-family="sans-serif" font-size="18" fill="#5b4a2a" text-anchor="middle"><circle r="34" fill="none" stroke="#5b4a2a" stroke-width="3"/><path d="M0-30 L8 0 L0 30 L-8 0z" fill="#b03a2e"/><text y="-40">N</text></g></svg>`;
 
-function plantillaEscape(){
-  const portada = pantallaNueva('Portada'), c1 = pantallaNueva('Candado 1: la pizarra'), c2 = pantallaNueva('Candado 2: el código'),
-        c3 = pantallaNueva('Candado 3: a oscuras'), c4 = pantallaNueva('Candado 4: la última puerta'), fin = pantallaNueva('¡Salieron!');
-  const encabezado = (t, color) => textoP({x: 40, y: 24, w: 730, h: 56, texto: t, tam: 26, negrita: true, color: color || '#14345f'});
+function proyectoEscape(){
+  const P = ['portada', 'biblio', 'escritorio', 'mapa', 'puerta', 'final', 'alarma'].map(n => pantallaNueva(n));
+  const [portada, biblio, escritorio, mapa, puerta, final, alarma] = P;
+  Object.assign(portada, {nombre: 'Portada', fondo: '#14223a'});
+  Object.assign(biblio, {nombre: 'La biblioteca a oscuras', fondo: '#3b2f4a', fondoImg: svgURL(SVG_BIBLIOTECA)});
+  Object.assign(escritorio, {nombre: 'El escritorio', fondo: '#f3ead6'});
+  Object.assign(mapa, {nombre: 'El mapa roto', fondo: '#d9c79a'});
+  Object.assign(puerta, {nombre: 'La puerta del laboratorio', fondo: '#1d2430'});
+  Object.assign(final, {nombre: '¡Escapaste!', fondo: '#2e9d5b'});
+  Object.assign(alarma, {nombre: 'Sonó la alarma', fondo: '#7a1f1f'});
+  const T = (o) => Object.assign(FABRICA.texto(), o);
+  const B = (o) => Object.assign(FABRICA.boton(), {letra: 'fredoka'}, o);
+  const ir = (p) => accion({tipo: 'ir', destino: p.id});
+  const ventana = (titulo, texto) => accion({tipo: 'ventana', titulo, texto});
 
-  portada.fondo = '#1b2238';
   portada.elementos.push(
-    textoP({x: 60, y: 70, w: 840, h: 110, texto: 'Escape del aula de Matemática', tam: 50, color: '#ffffff', negrita: true, alinear: 'center'}),
-    textoP({x: 130, y: 190, w: 700, h: 130, texto: 'Quedaron encerrados en el aula. Para salir hay que abrir cuatro candados, y cada uno se abre resolviendo un desafío. Se puede jugar solo o en grupo.', tam: 22, color: '#d8deea', alinear: 'center'}),
-    Object.assign(FABRICA.boton(), {x: 370, y: 350, w: 220, h: 66, texto: 'Entrar 🔑', tam: 24, relleno: '#e8a317', color: '#1d2430', accion: accion({tipo: 'siguiente'})}),
-    textoP({x: 130, y: 450, w: 700, h: 50, texto: 'No hay flechas: solo se avanza abriendo cada candado.', tam: 17, color: '#9aa6bd', alinear: 'center'})
+    T({x: 60, y: 60, w: 840, h: 110, texto: 'El laboratorio secreto', tam: 64, color: '#ffbf3c', negrita: true, alinear: 'center', letra: 'fredoka'}),
+    T({x: 120, y: 180, w: 720, h: 150, texto: 'Quedaste encerrado en la biblioteca de un científico. La única salida es la puerta del laboratorio, que tiene un candado de tres números. Buscá pistas, resolvé los desafíos y juntá los números antes de que suene la alarma.', tam: 22, color: '#e8edf5', alinear: 'center', letra: 'lexend'}),
+    B({x: 380, y: 360, w: 200, h: 70, texto: 'Entrar', tam: 30, relleno: '#e8a317', color: '#1d2430', accion: ir(biblio)}),
+    B({x: 395, y: 450, w: 170, h: 46, texto: 'Cómo se juega', tam: 18, relleno: 'transparent', color: '#cfd8e6', borde: 2, colorBorde: '#cfd8e6', resalte: 'iluminar',
+      accion: ventana('Cómo se juega', 'Tocá todo lo que te llame la atención: algunos objetos esconden pistas.\n\nSi encontrás una llave, tocala para guardarla. Se usa sola cuando tocás la cerradura correcta.\n\nCada desafío resuelto te da un número del candado. Anotalos.')})
   );
 
-  c1.fondo = '#f3efe4';
-  c1.elementos.push(
-    encabezado('Candado 1 de 4 · La pizarra'),
-    textoP({x: 40, y: 82, w: 880, h: 50, texto: 'En la pizarra quedó escrita una ecuación. Si la resuelven, aparece la puerta.', tam: 20, color: '#3b4556'}),
-    Object.assign(FABRICA.quiz(), {x: 220, y: 150, w: 520, h: 330, pregunta: 'Si 3x + 5 = 20, ¿cuánto vale x?', opciones: '3\n5\n15\n25/3', correcta: 2,
-      msjBien: '¡Correcto! La pizarra se borra y aparece una puerta.', msjMal: 'No es esa. Revisen la cuenta.', reintentar: true, exito: {tipo: 'siguiente', destino: ''}}),
-    botonPista('Primero resten 5 en los dos miembros de la igualdad. Después dividan por 3.')
+  biblio.elementos.push(
+    Object.assign(FABRICA.zona(), {x: 40, y: 70, w: 250, h: 330, alt: 'Biblioteca', accion: ventana('Un libro distinto', 'Entre los libros hay uno que dice en el lomo: Geometría. Adentro, una hoja doblada: la primera pista está en el escritorio de al lado.')}),
+    Object.assign(FABRICA.zona(), {x: 400, y: 80, w: 190, h: 130, alt: 'Ventana', accion: ventana('La ventana', 'Afuera es de noche. Por acá no se puede salir: la ventana está trabada.')}),
+    Object.assign(FABRICA.zona(), {x: 410, y: 240, w: 90, h: 60, alt: 'Nota sobre el escritorio', accion: ventana('Una nota', 'Escrito a mano: La llave de la puerta se me cayó cerca de la alfombra. Nunca la encuentro con esta luz…')}),
+    Object.assign(FABRICA.llave(), {x: 150, y: 452, w: 90, h: 45, rot: -18, nombre: 'llave de bronce', colorAct: '#c9973a'}),
+    Object.assign(FABRICA.cerradura(), {x: 790, y: 300, w: 50, h: 60, nombre: 'llave de bronce', msjBloqueada: 'La puerta está cerrada. Tiene que haber una llave por algún lado.', exito: {tipo: 'ir', destino: escritorio.id}}),
+    Object.assign(FABRICA.linterna(), {x: 0, y: 0, w: 960, h: 540, radio: 140, oscuridad: 0.94})
   );
 
-  c2.fondo = '#e8eef6';
-  c2.elementos.push(
-    encabezado('Candado 2 de 4 · El código'),
-    Object.assign(FABRICA.rect(), {x: 60, y: 110, w: 470, h: 330, relleno: '#fffdf5', color: '#1d2430', borde: 2, colorBorde: '#c9bfa5', rot: -2, tam: 22, negrita: false, alinear: 'left',
-      texto: 'Una nota pegada en la puerta dice:\n\nEl código tiene tres cifras.\n1.ª cifra: el resultado de 2³ − 5\n2.ª cifra: la raíz cuadrada de 49\n3.ª cifra: 15 dividido 3'}),
-    Object.assign(FABRICA.cerradura(), {x: 640, y: 170, w: 160, h: 192, modo: 'codigo', codigo: '375', alt: 'Candado con código',
-      msjBloqueada: 'Tiene un código de tres cifras.', exito: {tipo: 'siguiente', destino: ''}}),
-    textoP({x: 580, y: 380, w: 280, h: 50, texto: 'Tocá el candado para escribir el código.', tam: 17, color: '#3b4556', alinear: 'center'}),
-    botonPista('Calculen cada cifra por separado. Por ejemplo, 2³ = 2 × 2 × 2 = 8.')
+  escritorio.elementos.push(
+    T({x: 40, y: 20, w: 880, h: 70, texto: 'Sobre el escritorio hay dos desafíos. Cada uno esconde un número del candado.', tam: 24, color: '#14345f', negrita: true, letra: 'lexend'}),
+    Object.assign(FABRICA.quiz(), {x: 40, y: 100, w: 400, h: 330, letra: 'lexend', pregunta: 'Un hexágono es un polígono de…', opciones: '5 lados\n6 lados\n8 lados\n10 lados', correcta: 2,
+      msjBien: '¡Correcto! Primer número del candado: 6', msjMal: 'No. Pensá en las celdas de un panal.', reintentar: true}),
+    Object.assign(FABRICA.ordenar(), {x: 465, y: 90, w: 455, h: 370, tam: 17, letra: 'lexend', modo: 'lineas', consigna: 'Ordená los pasos para resolver 2x + 3 = 11',
+      texto: '2x + 3 = 11\n2x = 11 − 3\n2x = 8\nx = 8 : 2\nx = 4', msjBien: '¡Muy bien! Segundo número del candado: 4 (el valor de x)', msjMal: 'Todavía no. ¿Qué se hace primero con el 3?'}),
+    B({x: 700, y: 472, w: 220, h: 56, texto: 'Ir al mapa ▶', tam: 22, accion: ir(mapa)})
   );
 
-  c3.fondo = '#2a3140';
-  c3.elementos.push(
-    encabezado('Candado 3 de 4 · A oscuras', '#ffffff'),
-    textoP({x: 40, y: 82, w: 720, h: 40, texto: 'Se cortó la luz. Busquen la llave con la linterna y abran el armario.', tam: 19, color: '#d8deea'}),
-    Object.assign(FABRICA.rect(), {x: 640, y: 150, w: 240, h: 330, relleno: '#6b4f33', borde: 3, colorBorde: '#3e2c1b', radio: 8, texto: 'ARMARIO', tam: 22, color: '#f3e3c8'}),
-    Object.assign(FABRICA.cerradura(), {x: 720, y: 290, w: 80, h: 96, modo: 'llave', nombre: 'llave del armario', alt: 'Cerradura del armario',
-      msjBloqueada: 'Está cerrada. Busquen la llave en la oscuridad.', exito: {tipo: 'siguiente', destino: ''}}),
-    Object.assign(FABRICA.llave(), {x: 120, y: 440, w: 110, h: 55, nombre: 'llave del armario', rot: -20, alt: 'Llave'}),
-    botonPista('La llave quedó en el piso, del lado contrario al armario.'),
-    // la linterna deja ver el encabezado: arranca debajo
-    Object.assign(FABRICA.linterna(), {x: 0, y: 130, w: 960, h: 410, radio: 110, oscuridad: 0.95})
+  mapa.elementos.push(
+    T({x: 40, y: 20, w: 880, h: 70, texto: 'Un mapa roto en pedazos. Tocá dos piezas para cambiarlas de lugar hasta armarlo.', tam: 24, color: '#3a2614', negrita: true, letra: 'lexend'}),
+    Object.assign(FABRICA.puzzle(), {x: 180, y: 95, w: 480, h: 320, src: svgURL(SVG_MAPA), filas: 3, columnas: 3, msjBien: '¡Armaste el mapa! El número grande es el tercero del candado.'}),
+    Object.assign(FABRICA.rect(), {x: 690, y: 130, w: 230, h: 150, rot: 4, relleno: '#fff8dc', color: '#3a2614', texto: 'Si te trabás, armá primero las esquinas.', tam: 18, letra: 'patrick', borde: 2, colorBorde: '#c9a86a', radio: 4}),
+    B({x: 700, y: 455, w: 220, h: 60, texto: 'Ir a la puerta ▶', tam: 22, accion: ir(puerta)})
   );
 
-  c4.fondo = '#f3efe4';
-  c4.elementos.push(
-    encabezado('Candado 4 de 4 · La última puerta'),
-    Object.assign(FABRICA.ordenar(), {x: 120, y: 110, w: 720, h: 360, modo: 'lineas', consigna: 'Ordenen los pasos para resolver 2x − 4 = 10',
-      texto: 'Sumar 4 en los dos miembros\n2x = 14\nDividir por 2 en los dos miembros\nx = 7', msjBien: '¡Perfecto! La puerta se abre.', msjMal: 'Todavía no. Revisen el orden de los pasos.',
-      exito: {tipo: 'siguiente', destino: ''}}),
-    botonPista('Lo primero es dejar sola la parte que tiene la x.')
+  puerta.elementos.push(
+    T({x: 40, y: 30, w: 600, h: 120, texto: 'La puerta del laboratorio. Ingresá los tres números en orden antes de que suene la alarma.', tam: 26, color: '#ffffff', negrita: true, letra: 'lexend'}),
+    Object.assign(FABRICA.temporizador(), {x: 680, y: 30, w: 240, h: 140, minutos: 3, segundos: 0, auto: true, controles: false, sonido: true, msjFin: '¡Alarma!', relleno: '#2a3446', color: '#ffbf3c', exito: {tipo: 'ir', destino: alarma.id}}),
+    Object.assign(FABRICA.cerradura(), {x: 410, y: 190, w: 140, h: 168, modo: 'codigo', codigo: '647', colorAct: '#9aa7b8', resalte: 'agrandar', exito: {tipo: 'ir', destino: final.id}}),
+    B({x: 380, y: 400, w: 200, h: 56, texto: '💡 Pista', tam: 22, relleno: '#3a4a63', resalte: 'elevar',
+      accion: ventana('Repasemos', 'Primer número: los lados del hexágono.\nSegundo número: el valor de x en 2x + 3 = 11.\nTercer número: el que aparece en el mapa.')}),
+    T({x: 40, y: 470, w: 520, h: 50, texto: '¿Te faltó algún número? Volvé a buscarlo:', tam: 18, color: '#cfd8e6'}),
+    B({x: 560, y: 470, w: 160, h: 50, texto: 'Escritorio', tam: 18, relleno: 'transparent', borde: 2, colorBorde: '#cfd8e6', accion: ir(escritorio)}),
+    B({x: 740, y: 470, w: 160, h: 50, texto: 'Mapa', tam: 18, relleno: 'transparent', borde: 2, colorBorde: '#cfd8e6', accion: ir(mapa)})
   );
 
-  fin.fondo = '#1f7a52';
-  fin.elementos.push(
-    textoP({x: 60, y: 120, w: 840, h: 110, texto: '¡Escaparon! 🎉', tam: 60, color: '#ffffff', negrita: true, alinear: 'center'}),
-    textoP({x: 140, y: 240, w: 680, h: 100, texto: 'Abrieron los cuatro candados. Anoten cuánto tardaron y compárenlo con los otros grupos.', tam: 23, color: '#e2f4ea', alinear: 'center'}),
-    Object.assign(FABRICA.boton(), {x: 370, y: 380, w: 220, h: 60, texto: 'Volver a jugar', tam: 20, relleno: '#ffffff', color: '#1f7a52', accion: accion({tipo: 'ir', destino: portada.id})})
+  final.elementos.push(
+    T({x: 60, y: 110, w: 840, h: 120, texto: '¡Escapaste! 🎉', tam: 72, color: '#ffffff', negrita: true, alinear: 'center', letra: 'fredoka'}),
+    T({x: 120, y: 240, w: 720, h: 100, texto: 'Usaste geometría, ecuaciones y mucha paciencia para abrir el laboratorio.', tam: 26, color: '#eafbe9', alinear: 'center', letra: 'lexend'}),
+    B({x: 360, y: 380, w: 240, h: 64, texto: 'Jugar de nuevo', tam: 24, relleno: '#ffffff', color: '#2e9d5b', accion: ir(portada)})
   );
-
-  return {app: 'interactivo-aula', version: 1, titulo: 'Escape del aula de Matemática', ancho: ANCHO, alto: ALTO, navegacion: false, letra: 'sistema',
-    pantallas: [portada, c1, c2, c3, c4, fin]};
-}
-
-// Imagen para el rompecabezas del set de actividades (SVG propio, viaja adentro del archivo)
-function imagenPitagoras(){
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320"><rect width="480" height="320" fill="#fdf8ec"/>
-<g stroke="#1d2430" stroke-width="3" stroke-linejoin="round">
-<polygon points="150,170 246,170 150,98" fill="#ffffff"/>
-<rect x="150" y="170" width="96" height="96" fill="#2a5ea8" opacity=".85"/>
-<rect x="78" y="98" width="72" height="72" fill="#e8a317" opacity=".9"/>
-<polygon points="150,98 246,170 318,74 222,2" fill="#2e9d5b" opacity=".85"/></g>
-<rect x="150" y="158" width="12" height="12" fill="none" stroke="#1d2430" stroke-width="2"/>
-<g font-family="system-ui,sans-serif" font-weight="700" fill="#ffffff"><text x="114" y="145" font-size="26" text-anchor="middle">a²</text>
-<text x="198" y="229" font-size="30" text-anchor="middle">b²</text><text x="234" y="97" font-size="32" text-anchor="middle">c²</text></g>
-<text x="395" y="250" font-family="system-ui,sans-serif" font-size="26" font-weight="700" fill="#14345f" text-anchor="middle">a² + b² = c²</text></svg>`;
-  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-}
-
-function plantillaActividades(){
-  const menu = pantallaNueva('Menú');
-  const acts = [
-    {nombre: 'Opción múltiple', emoji: '✅', color: '#2a5ea8', texto: '#ffffff',
-     el: () => Object.assign(FABRICA.quiz(), {x: 220, y: 110, w: 520, h: 330, pregunta: '¿Cuánto suman los ángulos interiores de un triángulo?', opciones: '90°\n180°\n270°\n360°', correcta: 2,
-       msjBien: '¡Correcto! Siempre suman 180°.', msjMal: 'No es esa. Probá de nuevo.', reintentar: true})},
-    {nombre: 'Ordenar la oración', emoji: '🔤', color: '#e8a317', texto: '#1d2430',
-     el: () => Object.assign(FABRICA.ordenar(), {x: 170, y: 130, w: 620, h: 290, consigna: 'Ordená las palabras para armar la definición', texto: 'Un cuadrado tiene cuatro lados iguales y cuatro ángulos rectos',
-       modo: 'palabras', msjBien: '¡Muy bien!', msjMal: 'Todavía no. Revisá el orden.'})},
-    {nombre: 'Ordenar los pasos', emoji: '🪜', color: '#2e9d5b', texto: '#ffffff',
-     el: () => Object.assign(FABRICA.ordenar(), {x: 120, y: 110, w: 720, h: 340, modo: 'lineas', consigna: 'Ordená los pasos para construir un triángulo equilátero con compás',
-       texto: 'Trazar un segmento AB\nCon centro en A y radio AB, trazar un arco\nCon centro en B y el mismo radio, trazar otro arco\nUnir el punto donde se cortan los arcos con A y con B',
-       msjBien: '¡Exacto! Así se construye.', msjMal: 'Todavía no. Pensá qué hace falta tener antes de cada paso.'})},
-    {nombre: 'Rompecabezas', emoji: '🧩', color: '#b8432f', texto: '#ffffff',
-     el: () => Object.assign(FABRICA.puzzle(), {x: 240, y: 110, w: 480, h: 320, src: imagenPitagoras(), filas: 3, columnas: 3, msjBien: '¡Lo armaste! Es el teorema de Pitágoras.'})}
-  ];
-  const pantallas = acts.map((a, i) => pantallaNueva(`Actividad ${i + 1}: ${a.nombre}`));
-
-  menu.fondo = '#faf7f0';
-  menu.elementos.push(
-    textoP({x: 60, y: 36, w: 840, h: 70, texto: 'Repaso de geometría', tam: 42, negrita: true, color: '#14345f', alinear: 'center'}),
-    textoP({x: 60, y: 104, w: 840, h: 44, texto: 'Elegí una actividad. Las podés hacer en el orden que quieras.', tam: 20, color: '#56637b', alinear: 'center'})
+  alarma.elementos.push(
+    T({x: 60, y: 120, w: 840, h: 110, texto: '🚨 Sonó la alarma', tam: 64, color: '#ffffff', negrita: true, alinear: 'center', letra: 'fredoka'}),
+    T({x: 120, y: 240, w: 720, h: 80, texto: 'Se terminó el tiempo, pero los números que juntaste siguen sirviendo.', tam: 26, color: '#ffe3e3', alinear: 'center', letra: 'lexend'}),
+    B({x: 340, y: 360, w: 280, h: 64, texto: 'Volver a intentar', tam: 24, relleno: '#ffbf3c', color: '#1d2430', accion: ir(puerta)})
   );
-  acts.forEach((a, i) => {
-    menu.elementos.push(Object.assign(FABRICA.boton(), {
-      x: 90 + (i % 2) * 400, y: 180 + Math.floor(i / 2) * 150, w: 380, h: 120, tam: 24, radio: 18, resalte: 'elevar',
-      texto: `${a.emoji}  ${i + 1}. ${a.nombre}`, relleno: a.color, color: a.texto, accion: accion({tipo: 'ir', destino: pantallas[i].id})
-    }));
-  });
-
-  acts.forEach((a, i) => {
-    const p = pantallas[i];
-    p.fondo = '#faf7f0';
-    const siguiente = i < acts.length - 1 ? pantallas[i + 1].id : menu.id;
-    p.elementos.push(
-      Object.assign(FABRICA.rect(), {x: 0, y: 0, w: 960, h: 80, relleno: a.color, radio: 0, texto: '', fijo: true}),
-      textoP({x: 40, y: 12, w: 880, h: 56, texto: `${a.emoji}  Actividad ${i + 1} de ${acts.length} · ${a.nombre}`, tam: 26, negrita: true, color: a.texto}),
-      a.el(),
-      botonIr(menu.id, {x: 40, y: 466, texto: '◀ Menú', relleno: '#ffffff', color: '#14345f', borde: 2, colorBorde: '#14345f'}),
-      botonIr(siguiente, {x: 720, y: 466, texto: i < acts.length - 1 ? 'Siguiente ▶' : 'Terminar ✓', relleno: '#14345f', color: '#ffffff'})
-    );
-  });
-
-  return {app: 'interactivo-aula', version: 1, titulo: 'Repaso de geometría', ancho: ANCHO, alto: ALTO, navegacion: false, letra: 'sistema',
-    pantallas: [menu].concat(pantallas)};
-}
-
-const PLANTILLAS = {
-  blanco: null,
-  escape: plantillaEscape,
-  actividades: plantillaActividades,
-  ejemplo: proyectoEjemplo
-};
-function usarPlantilla(clave){
-  $('#m-plantillas').hidden = true;
-  if (clave === 'blanco') { presentacionNueva(); return; }
-  antes();
-  proyecto = validar(PLANTILLAS[clave]());
-  actual = 0; elegir([]);
-  dibujarTodo(); guardarLocal(); marcarSinGuardar(false);
-  if (document.activeElement) document.activeElement.blur();
-  aviso('Plantilla lista: cambiá los textos y las respuestas por los tuyos. Si te arrepentís, Ctrl+Z vuelve atrás.');
+  return {app: 'interactivo-aula', version: 1, titulo: 'Escape room: el laboratorio secreto', ancho: ANCHO, alto: ALTO, navegacion: false, letra: 'lexend', pantallas: P};
 }
 
 function validar(d){
@@ -1352,7 +1329,7 @@ let sinGuardar = false;
 function marcarSinGuardar(v){
   sinGuardar = v;
   const b = $('#b-guardar');
-  b.textContent = v ? 'Guardar •' : 'Guardar';
+  b.textContent = v ? '💾 Guardar •' : '💾 Guardar';
   b.title = v ? 'Hay cambios sin guardar. Descarga el proyecto para seguir editándolo (Ctrl+S)' : 'Descarga el proyecto para seguir editándolo (Ctrl+S)';
   try { localStorage.setItem(CLAVE + '-sin-guardar', v ? '1' : ''); } catch (e) {}
 }
@@ -1429,6 +1406,7 @@ function dibujarEscena(){
   escena.innerHTML = ''; nodos = {}; marcoSel = null; marcoGrupo = null;
   escena.className = ('escena ed ' + letraClase(proyecto.letra)).trim();
   const p = pant(); fondo(escena, p);
+  $('#vacio').hidden = p.elementos.length > 0 || !!p.fondoImg;
   p.elementos.forEach(el => {
     const n = crearNodo(el, medios, false);
     n.dataset.id = el.id;
@@ -2322,8 +2300,8 @@ function letrasUsadas(){
   proyecto.pantallas.forEach(p => p.elementos.forEach(e => s.add(e.letra)));
   return [...s].filter(id => id && FUENTES[id]);
 }
-function generarHTML(){
-  const datos = JSON.stringify(Object.assign({}, proyecto, {medios: mediosUsados()})).replace(/</g, '\\u003c');
+function generarHTML(desde){
+  const datos = JSON.stringify(Object.assign({}, proyecto, {medios: mediosUsados()}, desde ? {inicio: desde} : {})).replace(/</g, '\\u003c');
   const fin = '<' + '/script>';
   const comentario = '<' + '!-- Hecho con Presentaciones interactivas para el aula (software libre, GNU GPL v3). Se puede volver a abrir en el editor para seguir editándolo. --' + '>';
   return '<!doctype html>\n' + comentario + `
@@ -2350,8 +2328,8 @@ function exportar(){
   marcarSinGuardar(false);
   aviso('Listo: el HTML quedó en tus descargas (también lo podés volver a abrir acá para editarlo)');
 }
-function vistaPrevia(){
-  $('#marco-prev').srcdoc = generarHTML();
+function vistaPrevia(desde){
+  $('#marco-prev').srcdoc = generarHTML(typeof desde === 'number' ? desde : 0);
   $('#prev').hidden = false; $('#b-cerrar-prev').focus();
 }
 function cerrarPrev(){ $('#prev').hidden = true; $('#marco-prev').srcdoc = ''; }
@@ -2380,10 +2358,31 @@ $('#b-cerrar-prev').onclick = cerrarPrev;
 $('#b-acerca').onclick = () => { $('#acerca').hidden = false; $('#b-cerrar-acerca').focus(); };
 $('#b-cerrar-acerca').onclick = () => { $('#acerca').hidden = true; };
 $('#acerca').addEventListener('click', e => { if (e.target.id === 'acerca') $('#acerca').hidden = true; });
-$('#b-nuevo').onclick = () => siHayCambios(() => { $('#m-plantillas').hidden = false; $('#m-plantillas .plantilla').focus(); });
-document.querySelectorAll('[data-plantilla]').forEach(b => b.onclick = () => usarPlantilla(b.dataset.plantilla));
-$('#pl-cancelar').onclick = () => { $('#m-plantillas').hidden = true; };
-$('#m-plantillas').addEventListener('click', e => { if (e.target.id === 'm-plantillas') $('#m-plantillas').hidden = true; });
+$('#b-nuevo').onclick = () => siHayCambios(() => mostrarInicio(true));
+/* pantalla de inicio: en blanco, abrir o cargar un ejemplo */
+function mostrarInicio(desdeNuevo){
+  try { $('#i-nomostrar').checked = localStorage.getItem(CLAVE + '-sin-inicio') === '1'; } catch (e) {}
+  $('#m-inicio').hidden = false; $('#i-blanco').focus();
+}
+function cerrarInicio(){
+  $('#m-inicio').hidden = true;
+  try { localStorage.setItem(CLAVE + '-sin-inicio', $('#i-nomostrar').checked ? '1' : ''); } catch (e) {}
+}
+function cargarPlantilla(p, msj){
+  antes(); proyecto = validar(p); actual = 0; elegir([]);
+  dibujarTodo(); guardarLocal(); marcarSinGuardar(false); aviso(msj);
+}
+$('#i-blanco').onclick = () => { cerrarInicio(); presentacionNueva(); };
+$('#i-abrir').onclick = () => { cerrarInicio(); abrirProyecto(); };
+$('#i-basico').onclick = () => { cerrarInicio(); cargarPlantilla(proyectoEjemplo(), 'Ejemplo cargado: tocá ▶ Probar para verlo funcionando'); };
+$('#i-escape').onclick = () => { cerrarInicio(); cargarPlantilla(proyectoEscape(), 'Escape room cargado: tocá ▶ Probar para jugarlo, y después mirá cómo está armada cada pantalla'); };
+$('#i-cerrar').onclick = cerrarInicio;
+$('#m-inicio').addEventListener('click', e => { if (e.target.id === 'm-inicio') cerrarInicio(); });
+/* pestañas de la cinta */
+document.querySelectorAll('.pestana').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.pestana').forEach(x => { const on = x === t; x.setAttribute('aria-selected', String(on)); $('#' + x.getAttribute('aria-controls')).hidden = !on; });
+}));
+$('#p-probar').onclick = () => vistaPrevia(actual);
 // al cerrar la pestaña con cambios sin guardar, el navegador pregunta antes
 window.addEventListener('beforeunload', e => { if (sinGuardar) { e.preventDefault(); e.returnValue = ''; } });
 $('#titulo').addEventListener('focus', antes);
@@ -2396,7 +2395,7 @@ document.addEventListener('keydown', e => {
   if (!$('#m-vq').hidden) { if (e.key === 'Escape') cerrarPregunta(); return; }
   if (!$('#m-bancos').hidden) { if (e.key === 'Escape') $('#m-bancos').hidden = true; return; }
   if (!$('#m-cambios').hidden) { if (e.key === 'Escape') $('#c-cancelar').click(); return; }
-  if (!$('#m-plantillas').hidden) { if (e.key === 'Escape') $('#m-plantillas').hidden = true; return; }
+  if (!$('#m-inicio').hidden) { if (e.key === 'Escape') cerrarInicio(); return; }
   const mod = e.ctrlKey || e.metaKey, tecla = e.key.toLowerCase();
   if (mod && tecla === 's') { e.preventDefault(); guardarProyecto(); return; }
   if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
@@ -2450,6 +2449,7 @@ window.addEventListener('resize', ajustarEscala);
   dibujarTodo();
   try { marcarSinGuardar(recuperado && !!localStorage.getItem(CLAVE + '-sin-guardar')); } catch (e) { marcarSinGuardar(false); }
   if (recuperado) aviso('Se recuperó la última presentación en la que estabas trabajando');
+  else { let no = false; try { no = localStorage.getItem(CLAVE + '-sin-inicio') === '1'; } catch (e) {} if (!no) mostrarInicio(false); }
   // los videos subidos se recuperan del almacenamiento del navegador
   BD.todos().then(m => { if (Object.keys(m).length) { Object.assign(medios, m); dibujarTodo(); } });
 })();

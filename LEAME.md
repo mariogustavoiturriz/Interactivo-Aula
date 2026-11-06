@@ -28,7 +28,8 @@ Casi nada. Funciona todo sin conexión, salvo los videos de YouTube y los enlace
 ## Archivos
 
 - `index.html`: el editor completo, en un solo archivo.
-- `ejemplos/ejemplo.html`: una presentación de ejemplo exportada con el editor.
+- `ejemplos/ejemplo.html`: una presentación sencilla de ejemplo.
+- `ejemplos/escape-room.html`: **El laboratorio secreto**, un escape room de matemática que usa linterna, llave y cerradura, opción múltiple, ordenar pasos, rompecabezas, temporizador y candado con código. También se puede abrir desde el editor (Nuevo → Escape room) para ver cómo está armado.
 
 ## Licencia
 
