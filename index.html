@@ -90,6 +90,10 @@ input[type=range]{width:100%}
 .inicio-ops button .ic{font-size:34px;line-height:1}
 .inicio-ops button:hover{border-color:var(--azul-2);background:#f4f8ff}
 @media (max-width:640px){.inicio-ops{grid-template-columns:1fr 1fr}}
+.ed .el.oculto-ed{opacity:.38!important;outline:calc(2px / var(--k,1)) dashed var(--gris);outline-offset:calc(2px / var(--k,1))}
+.lista-els{display:flex;flex-direction:column;gap:2px;max-height:180px;overflow:auto;border:1px solid var(--borde);border-radius:8px;padding:4px 8px;background:#fff}
+.lista-els .chk{margin:0;min-height:28px}
+.pild{display:inline-block;font-size:11px;background:var(--suave);color:var(--gris);border-radius:99px;padding:1px 7px;margin-left:4px}
 #b-varios[aria-pressed="true"]{background:var(--acento);border-color:var(--acento);font-weight:700}
 .ed .el.fijo{cursor:default}
 .ed .el.fijo.sel-fijo{outline:calc(2px / var(--k,1)) dashed var(--gris)}
@@ -172,10 +176,13 @@ input[type=range]{width:100%}
   <div class="grupo"><span class="gtit">Escribir</span>
     <button class="tile" data-agregar="texto" title="Un cuadro de texto"><span class="ic">🔤</span>Texto</button>
     <button class="tile" data-agregar="boton" title="Un botón que hace algo al tocarlo"><span class="ic">🔘</span>Botón</button>
+    <button class="tile" data-agregar="girable" title="Una tarjeta con frente y dorso que se da vuelta al tocarla"><span class="ic">🃏</span>Tarjeta que gira</button>
   </div>
   <div class="grupo"><span class="gtit">Multimedia</span>
     <button class="tile" id="b-img" title="Una imagen de tu compu (también podés pegarla o arrastrarla)"><span class="ic">🖼️</span>Imagen</button>
     <button class="tile" id="b-video" title="Un video propio o de YouTube"><span class="ic">🎬</span>Video</button>
+    <button class="tile" id="b-audio" title="Un audio propio: narración, música o efecto (MP3, OGG, WAV)"><span class="ic">🔊</span>Audio</button>
+    <button class="tile" data-agregar="web" title="Incrustar GeoGebra, un mapa, un formulario u otra página (necesita internet)"><span class="ic">🌐</span>Incrustar web</button>
     <button class="tile" id="b-bancos" title="Buscar imágenes y videos libres en bancos seleccionados"><span class="ic">🔎</span>Bancos libres</button>
   </div>
   <div class="grupo"><span class="gtit">Formas</span>
@@ -186,7 +193,9 @@ input[type=range]{width:100%}
 </div>
 <div class="cinta" id="c-act" role="tabpanel" aria-labelledby="t-act" hidden>
   <div class="grupo"><span class="gtit">Preguntas</span>
-    <button class="tile act" data-agregar="quiz" title="Pregunta con varias opciones"><span class="ic">✅</span>Opción múltiple</button>
+    <button class="tile act" data-agregar="quiz" title="Pregunta con varias opciones, con una o con varias correctas"><span class="ic">✅</span>Opción múltiple</button>
+    <button class="tile act" data-agregar="vf" title="Una afirmación para decidir si es verdadera o falsa"><span class="ic">⚖️</span>Verdadero o falso</button>
+    <button class="tile act" data-agregar="respuesta" title="El estudiante escribe la respuesta: un número o una palabra"><span class="ic">⌨️</span>Respuesta corta</button>
     <button class="tile act" data-agregar="ordenar" title="Ordenar palabras o pasos"><span class="ic">🔀</span>Ordenar</button>
     <button class="tile act" id="b-videoquiz" title="El video se detiene en los momentos que elijas y hace una pregunta"><span class="ic">📺</span>Video con preguntas</button>
   </div>
@@ -229,7 +238,7 @@ input[type=range]{width:100%}
 <div id="acerca" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="acerca-t">
   <div class="caja">
     <h2 id="acerca-t">Presentaciones interactivas para el aula</h2>
-    <p style="font-size:13px;color:var(--gris);margin-top:-6px">Versión 1.0 · 6 de noviembre de 2026</p>
+    <p style="font-size:13px;color:var(--gris);margin-top:-6px">Versión 1.1 · 19 de noviembre de 2026</p>
     <p>Editor libre para armar presentaciones con ventanas emergentes, zonas para tocar y navegación entre pantallas, al estilo de las herramientas comerciales pero sin cuentas, sin marcas de agua y sin depender de internet.</p>
     <p><b>Cómo se comparte:</b> con <b>Exportar HTML</b> obtenés un único archivo que se abre en cualquier navegador, en la compu o en el celular, y se puede subir a un aula virtual o pasar por pendrive. Ese mismo archivo se puede volver a abrir acá para seguir editándolo.</p>
     <p><b>Dónde quedan tus datos:</b> todo se procesa en tu navegador. Nada se sube a ningún servidor.</p>
@@ -437,6 +446,37 @@ const CSS_ESCENA = `.escena{position:relative;overflow:hidden;background-size:co
 .ia-fila button{font:inherit;border:0;border-radius:8px;padding:8px 16px;cursor:pointer;background:#2a5ea8;color:#fff}
 .ia-fila .ia-no{background:#e8ebf0;color:#1d2430}
 .el-videoquiz{background:#000}
+.act-ayuda{font-size:.78em;color:var(--c);font-weight:600;margin-top:-6px}
+.act-multi .act-btn::before{content:"☐  "}
+.act-multi .act-btn.elegida::before{content:"☑  "}
+.act-btn.elegida{background:#eef3fb;box-shadow:inset 0 0 0 2px var(--c)}
+.act-btn.elegida.ok,.act-btn.ok{background:#2e9d5b;border-color:#2e9d5b;color:#fff;box-shadow:none}
+.act-btn.elegida.mal{background:#d64545;border-color:#d64545;color:#fff;box-shadow:none}
+.act-resp{display:flex;gap:8px}
+.act-resp input{flex:1;min-width:0;font:inherit;padding:8px 12px;border:2px solid #c9cfd8;border-radius:10px;background:#fff;color:#1d2430}
+.act-resp input.ok{border-color:#2e9d5b;background:#eafbe9}
+.act-resp input.mal{border-color:#d64545;animation:temblor .4s}
+.act-resp button{font:inherit;font-size:.85em;background:var(--c);color:#fff;border:0;border-radius:10px;padding:6px 16px;cursor:pointer}
+.act-resp input:focus-visible,.act-resp button:focus-visible{outline:3px solid #ffbf3c;outline-offset:2px}
+.el-girable{perspective:1000px}
+.flip-in{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.flip-in.girada{transform:rotateY(180deg)}
+.flip-cara{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px;box-sizing:border-box;overflow:hidden;box-shadow:0 4px 14px rgba(20,52,95,.18);gap:8px}
+.flip-dorso{transform:rotateY(180deg)}
+.flip-cara img{max-width:100%;min-height:0;flex:1 1 auto;object-fit:contain}
+.flip-txt{white-space:pre-wrap;line-height:1.25;flex:none}
+.flip-pista{position:absolute;right:8px;bottom:6px;font-size:18px;opacity:.75;pointer-events:none;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.el-girable.vista .flip-pista{display:none}
+.el-web iframe{width:100%;height:100%;border:0;display:block}
+.web-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:repeating-linear-gradient(45deg,#f0ece2,#f0ece2 12px,#e9e3d6 12px,#e9e3d6 24px);color:#5b6676;font:600 16px system-ui,sans-serif;text-align:center;padding:10px;box-sizing:border-box}
+.web-ic{font-size:40px}
+.web-nota{font-weight:400;font-size:13px}
+.el-audio{align-items:center;gap:12px}
+.au-btn{flex:none;height:100%;aspect-ratio:1;border-radius:50%;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.au-btn svg{width:46%;height:46%}
+.el-audio.sonando .au-btn{animation:latido 1.2s ease-in-out infinite}
+.au-lbl{font-weight:600;line-height:1.2}
+@keyframes latido{50%{scale:1.08}}
 .vq{position:relative;width:100%;height:100%}
 .vq video,.vq iframe,.vq>div:not([class]){width:100%;height:100%;border:0;display:block;background:#000}
 .vq-capa{position:absolute;inset:0;background:rgba(10,18,30,.82);display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;z-index:3}
@@ -509,6 +549,14 @@ function crearNodo(el, medios, vivo){
     linterna();
   } else if (tipo === 'videoquiz') {
     videoPreguntas();
+  } else if (tipo === 'respuesta') {
+    respuestaCorta();
+  } else if (tipo === 'girable') {
+    girable();
+  } else if (tipo === 'web') {
+    web();
+  } else if (tipo === 'audio') {
+    audio();
   }
   if ((tipo === 'texto' || tipo === 'boton' || tipo === 'forma' || tipo === 'imagen') && el.borde > 0) s.border = el.borde + 'px solid ' + (el.colorBorde || '#1d2430');
   return d;
@@ -523,6 +571,7 @@ function crearNodo(el, medios, vivo){
     s.setProperty('--c', el.colorAct || '#2a5ea8');
   }
   function resuelto(det){ d.dispatchEvent(new CustomEvent('resuelto', {detail: det || {}})); }
+  function fallo(){ d.dispatchEvent(new CustomEvent('fallo')); }
   function avisar(t){ [].forEach.call(document.querySelectorAll('.ia-toast'), function(x){ x.remove(); }); var a = nuevo('div', 'ia-toast', t); a.setAttribute('role', 'status'); document.body.appendChild(a); setTimeout(function(){ a.remove(); }, 2600); }
   function inventario(){ return window.__iaInventario || (window.__iaInventario = {}); }
   function mezclar(a){ for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -569,6 +618,7 @@ function crearNodo(el, medios, vivo){
 
   /* ---------- opción múltiple ---------- */
   function quiz(){
+    if (el.multiple) return quizVarias();
     tarjeta();
     d.appendChild(nuevo('div', 'act-consigna', el.pregunta || ''));
     var ops = nuevo('div', 'act-ops'), fb = nuevo('div', 'act-fb'), botones = [];
@@ -583,7 +633,7 @@ function crearNodo(el, medios, vivo){
           botones.forEach(function(x){ x.disabled = true; });
           resuelto({puntaje: errores ? 0.5 : 1});   // a la primera vale todo; después de equivocarse, la mitad
         } else {
-          errores++;
+          errores++; fallo();
           b.classList.add('mal'); b.disabled = true;
           fb.textContent = el.msjMal || 'No es esa.'; fb.className = 'act-fb mal';
           if (!el.reintentar) botones.forEach(function(x, j){ x.disabled = true; if (j + 1 === correcta) x.classList.add('ok'); });
@@ -592,6 +642,146 @@ function crearNodo(el, medios, vivo){
       botones.push(b); ops.appendChild(b);
     });
     d.appendChild(ops); d.appendChild(fb);
+  }
+
+  /* opción múltiple con varias respuestas correctas: se marcan y se comprueba */
+  function quizVarias(){
+    tarjeta(); d.classList.add('act-multi');
+    d.appendChild(nuevo('div', 'act-consigna', el.pregunta || ''));
+    var ayuda = nuevo('div', 'act-ayuda', 'Marcá todas las correctas'); d.appendChild(ayuda);
+    var ops = nuevo('div', 'act-ops'), fb = nuevo('div', 'act-fb'), botones = [], errores = 0, listo = false;
+    fb.setAttribute('aria-live', 'polite');
+    var lista = String(el.opciones || '').split('\n').map(function(x){ return x.trim(); }).filter(Boolean);
+    var buenas = String(el.correctas || '').split(/[^0-9]+/).map(Number).filter(function(n){ return n >= 1 && n <= lista.length; });
+    lista.forEach(function(t){
+      var b = boton('act-btn', t); b.setAttribute('aria-pressed', 'false');
+      if (vivo) b.addEventListener('click', function(){ if (listo) return; b.classList.toggle('elegida'); b.setAttribute('aria-pressed', String(b.classList.contains('elegida'))); fb.textContent = ''; fb.className = 'act-fb'; });
+      botones.push(b); ops.appendChild(b);
+    });
+    var acc = nuevo('div', 'act-acciones'), bOk = boton('', 'Comprobar'); acc.appendChild(bOk);
+    if (vivo) bOk.addEventListener('click', function(){
+      var elegidas = []; botones.forEach(function(b, i){ if (b.classList.contains('elegida')) elegidas.push(i + 1); });
+      if (!elegidas.length) { fb.textContent = 'Marcá al menos una opción.'; fb.className = 'act-fb mal'; return; }
+      var bien = elegidas.length === buenas.length && elegidas.every(function(n){ return buenas.indexOf(n) >= 0; });
+      if (bien) {
+        listo = true; bOk.disabled = true;
+        botones.forEach(function(b, i){ b.disabled = true; if (buenas.indexOf(i + 1) >= 0) b.classList.add('ok'); });
+        fb.textContent = el.msjBien || '¡Correcto!'; fb.className = 'act-fb ok';
+        resuelto({puntaje: errores ? 0.5 : 1});
+      } else {
+        errores++; fallo();
+        var aciertos = elegidas.filter(function(n){ return buenas.indexOf(n) >= 0; }).length;
+        fb.textContent = (el.msjMal || 'Todavía no.') + ' Acertaste ' + aciertos + ' de ' + buenas.length + (elegidas.length > aciertos ? ' y marcaste alguna que no va.' : '.');
+        fb.className = 'act-fb mal';
+        if (!el.reintentar) {
+          listo = true; bOk.disabled = true;
+          botones.forEach(function(b, i){ b.disabled = true; if (buenas.indexOf(i + 1) >= 0) b.classList.add('ok'); else if (b.classList.contains('elegida')) b.classList.add('mal'); });
+        }
+      }
+    });
+    d.appendChild(ops); d.appendChild(acc); d.appendChild(fb);
+  }
+
+  /* respuesta corta: texto (sin distinguir mayúsculas ni tildes) o número (con tolerancia, admite coma y fracciones) */
+  function respuestaCorta(){
+    tarjeta();
+    d.appendChild(nuevo('div', 'act-consigna', el.pregunta || ''));
+    var fila = nuevo('div', 'act-resp'), inp = nuevo('input'), bOk = boton('', 'Comprobar'), fb = nuevo('div', 'act-fb');
+    inp.type = 'text'; inp.autocomplete = 'off'; inp.setAttribute('aria-label', 'Tu respuesta');
+    inp.placeholder = el.modo === 'numero' ? 'Escribí un número' : 'Escribí tu respuesta';
+    if (el.modo === 'numero') inp.inputMode = 'decimal';
+    if (!vivo) { inp.tabIndex = -1; inp.readOnly = true; }
+    fb.setAttribute('aria-live', 'polite');
+    fila.appendChild(inp); fila.appendChild(bOk); d.appendChild(fila); d.appendChild(fb);
+    if (!vivo) return;
+    var validas = String(el.respuestas || '').split('\n').map(function(x){ return x.trim(); }).filter(Boolean);
+    var errores = 0, listo = false;
+    function normal(t){ return String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+    function numero(t){
+      t = String(t).trim().replace(/\s/g, '');
+      var fr = t.match(/^(-?\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)$/);
+      if (fr) return parseFloat(fr[1].replace(',', '.')) / parseFloat(fr[2].replace(',', '.'));
+      return /^-?\d*(?:[.,]\d+)?$/.test(t) && t !== '' && t !== '-' ? parseFloat(t.replace(',', '.')) : NaN;
+    }
+    function correcta(v){
+      if (el.modo === 'numero') {
+        var x = numero(v); if (isNaN(x)) return null;
+        var tol = Math.abs(parseFloat(String(el.tolerancia || 0).replace(',', '.')) || 0);
+        return validas.some(function(r){ var y = numero(r); return !isNaN(y) && Math.abs(x - y) <= tol + 1e-9; });
+      }
+      return validas.some(function(r){ return normal(r) === normal(v); });
+    }
+    function comprobar(){
+      if (listo) return;
+      if (!inp.value.trim()) { inp.focus(); return; }
+      var r = correcta(inp.value);
+      if (r === null) { fb.textContent = 'Escribí un número (podés usar coma o una fracción como 3/4).'; fb.className = 'act-fb mal'; inp.focus(); return; }
+      if (r) {
+        listo = true; inp.disabled = true; bOk.disabled = true; inp.classList.remove('mal'); inp.classList.add('ok');
+        fb.textContent = el.msjBien || '¡Correcto!'; fb.className = 'act-fb ok';
+        resuelto({puntaje: errores ? 0.5 : 1});
+      } else {
+        errores++; fallo(); inp.classList.add('mal'); setTimeout(function(){ inp.classList.remove('mal'); }, 600);
+        fb.textContent = el.msjMal || 'No es correcto.'; fb.className = 'act-fb mal';
+        if (!el.reintentar) { listo = true; inp.disabled = true; bOk.disabled = true; fb.textContent += ' La respuesta era: ' + (validas[0] || ''); }
+        else inp.select();
+      }
+    }
+    bOk.addEventListener('click', comprobar);
+    inp.addEventListener('keydown', function(e){ e.stopPropagation(); if (e.key === 'Enter') comprobar(); });
+  }
+
+  /* tarjeta que gira al tocarla: frente y dorso */
+  function girable(){
+    d.classList.add('flip'); s.overflow = 'visible'; s.fontSize = (el.tam || 22) + 'px';
+    var giro = nuevo('div', 'flip-in');
+    [['flip-frente', el.frente, el.colorFrente || '#2a5ea8', el.letraFrente || '#ffffff', el.imgFrente],
+     ['flip-dorso', el.dorso, el.colorDorso || '#ffffff', el.letraDorso || '#1d2430', el.imgDorso]].forEach(function(c){
+      var cara = nuevo('div', 'flip-cara ' + c[0]);
+      cara.style.background = c[2]; cara.style.color = c[3]; cara.style.borderRadius = (el.radio == null ? 16 : el.radio) + 'px';
+      if (c[4]) { var im = nuevo('img'); im.src = c[4]; im.alt = ''; cara.appendChild(im); }
+      if (c[1]) cara.appendChild(nuevo('div', 'flip-txt', c[1]));
+      giro.appendChild(cara);
+    });
+    d.appendChild(giro);
+    if (!vivo) { if (el.verDorso) giro.classList.add('girada'); return; }
+    if (el.pista !== false) d.appendChild(nuevo('div', 'flip-pista', '↻'));
+    clic(function(){ giro.classList.toggle('girada'); d.classList.add('vista'); }, 'Tarjeta: tocá para darla vuelta');
+  }
+
+  /* contenido web incrustado: GeoGebra, mapas, formularios… (necesita internet) */
+  function web(){
+    s.background = '#ffffff'; s.borderRadius = (el.radio || 0) + 'px';
+    var url = el.url || '';
+    if (!vivo || !url) {
+      var c = nuevo('div', 'web-ph'), host = '';
+      try { host = new URL(url).hostname.replace(/^www\./, ''); } catch (e) {}
+      c.appendChild(nuevo('div', 'web-ic', '🌐'));
+      c.appendChild(nuevo('div', 'web-t', url ? 'Contenido de ' + host : 'Falta la dirección'));
+      if (url) c.appendChild(nuevo('div', 'web-nota', 'Se ve en la vista previa y en la presentación, con internet'));
+      d.appendChild(c); return;
+    }
+    var f = nuevo('iframe'); f.src = url; f.title = el.alt || 'Contenido incrustado'; f.loading = 'lazy';
+    f.allow = 'fullscreen; clipboard-write; autoplay; encrypted-media'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
+    d.appendChild(f);
+  }
+
+  /* audio: un botón redondo que reproduce y pausa */
+  function audio(){
+    s.overflow = 'visible'; s.setProperty('--c', el.colorAct || '#2a5ea8'); s.fontSize = (el.tam || 18) + 'px';
+    var PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
+    var PAUSA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>';
+    var b = nuevo('div', 'au-btn'); b.innerHTML = PLAY; d.appendChild(b);
+    if (el.etiqueta) d.appendChild(nuevo('div', 'au-lbl', el.etiqueta));
+    var src = medios[el.medio];
+    if (!vivo || !src) return;
+    var a = new Audio(src); a.loop = !!el.repetir; a.preload = 'auto';
+    function icono(){ b.innerHTML = a.paused ? PLAY : PAUSA; d.classList.toggle('sonando', !a.paused); }
+    ['play', 'pause', 'ended'].forEach(function(ev){ a.addEventListener(ev, icono); });
+    clic(function(){ if (a.paused) { var pr = a.play(); if (pr && pr.catch) pr.catch(function(){}); } else a.pause(); }, 'Audio: ' + (el.etiqueta || 'reproducir'));
+    if (el.auto) setTimeout(function(){ var pr = a.play(); if (pr && pr.catch) pr.catch(function(){}); }, 400);
+    // al salir de la pantalla se detiene
+    var h2 = setInterval(function(){ if (!d.isConnected) { a.pause(); clearInterval(h2); } }, 500);
   }
 
   /* ---------- ordenar palabras o pasos ---------- */
@@ -622,7 +812,7 @@ function crearNodo(el, medios, vivo){
         if (hechos.join('\u0001') === piezas.join('\u0001')) {
           resp.classList.add('ok'); fb.textContent = el.msjBien || '¡Muy bien!'; fb.className = 'act-fb ok';
           bOk.disabled = true; resuelto();
-        } else { fb.textContent = el.msjMal || 'Todavía no.'; fb.className = 'act-fb mal'; }
+        } else { fallo(); fb.textContent = el.msjMal || 'Todavía no.'; fb.className = 'act-fb mal'; }
       });
       bRe.addEventListener('click', function(){
         resp.classList.remove('ok'); bOk.disabled = false; fb.textContent = ''; fb.className = 'act-fb';
@@ -717,7 +907,7 @@ function crearNodo(el, medios, vivo){
     clic(function(){
       if (d.classList.contains('volando')) return;
       inventario()['llave:' + nombre] = true;
-      d.classList.add('volando'); avisar('🗝 Conseguiste: ' + nombre);
+      d.classList.add('volando'); avisar('🗝 Conseguiste: ' + nombre); resuelto();
       setTimeout(function(){ d.classList.add('tomada'); }, 500);
     }, 'Tomar ' + nombre);
   }
@@ -755,10 +945,10 @@ function crearNodo(el, medios, vivo){
       if (el.modo === 'codigo') {
         pedirCodigo(function(v){
           if (String(v).trim().toLowerCase() === String(el.codigo || '').trim().toLowerCase()) abrir();
-          else { temblar(); avisar('Código incorrecto'); }
+          else { fallo(); temblar(); avisar('Código incorrecto'); }
         });
       } else if (inventario()['llave:' + (el.nombre || 'llave')]) abrir();
-      else { temblar(); avisar(el.msjBloqueada || 'Está cerrada.'); }
+      else { fallo(); temblar(); avisar(el.msjBloqueada || 'Está cerrada.'); }
     }, el.modo === 'codigo' ? 'Candado con código' : 'Cerradura');
   }
 
@@ -857,6 +1047,7 @@ function crearNodo(el, medios, vivo){
         var b = boton('act-btn', txt);
         b.addEventListener('click', function(){
           r.intentos++; r.elegidas.push(txt);
+          if (i + 1 !== correcta) fallo();
           if (i + 1 === correcta) {
             r.bien = r.intentos === 1; b.classList.add('ok');
             botones.forEach(function(x){ x.disabled = true; });
@@ -1018,9 +1209,98 @@ function reproductor(){
     marco.style.width = (P.ancho * k) + 'px'; marco.style.height = (P.alto * k) + 'px';
   }
   function indice(id){ for (var i = 0; i < P.pantallas.length; i++) if (P.pantallas[i].id === id) return i; return -1; }
+
+  /* ---- sonidos sintetizados (no necesitan archivos) ---- */
+  var ctxAudio = null;
+  function sonar(nombre){
+    if (!nombre) return;
+    if (nombre.indexOf('archivo:') === 0) { var src = (P.medios || {})[nombre.slice(8)]; if (src) { var a = new Audio(src); var pr = a.play(); if (pr && pr.catch) pr.catch(function(){}); } return; }
+    try {
+      ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+      var c = ctxAudio, t = c.currentTime;
+      var notas = {
+        clic: [[1200, 0, .05, 'square', .06]],
+        acierto: [[660, 0, .12, 'sine', .2], [880, .11, .2, 'sine', .2]],
+        error: [[220, 0, .18, 'sawtooth', .12], [170, .16, .25, 'sawtooth', .12]],
+        moneda: [[988, 0, .08, 'square', .1], [1319, .08, .3, 'square', .1]],
+        festejo: [[523, 0, .12, 'triangle', .2], [659, .12, .12, 'triangle', .2], [784, .24, .12, 'triangle', .2], [1047, .36, .35, 'triangle', .22]],
+        campana: [[880, 0, 1.2, 'sine', .2], [1760, 0, .8, 'sine', .06]]
+      }[nombre] || [];
+      notas.forEach(function(n){
+        var o = c.createOscillator(), g = c.createGain();
+        o.type = n[3]; o.frequency.value = n[0];
+        g.gain.setValueAtTime(n[4], t + n[1]); g.gain.exponentialRampToValueAtTime(0.001, t + n[1] + n[2]);
+        o.connect(g); g.connect(c.destination); o.start(t + n[1]); o.stop(t + n[1] + n[2] + .02);
+      });
+    } catch (e) {}
+  }
+
+  /* ---- confeti ---- */
+  function festejar(){
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var cv = document.createElement('canvas'); cv.className = 'ia-confeti';
+    var W = cv.width = innerWidth, H = cv.height = innerHeight; document.body.appendChild(cv);
+    var g = cv.getContext('2d'), col = ['#e8a317', '#2a5ea8', '#2e9d5b', '#d64545', '#8e44ad', '#ffbf3c'], ps = [];
+    for (var k = 0; k < 160; k++) ps.push({x: W / 2 + (Math.random() - .5) * W * .3, y: H * .45, vx: (Math.random() - .5) * 16, vy: -Math.random() * 16 - 5, r: Math.random() * 6 + 4, c: col[k % col.length], a: Math.random() * 6, va: (Math.random() - .5) * .4});
+    var t0 = performance.now();
+    (function cuadro(t){
+      g.clearRect(0, 0, W, H);
+      ps.forEach(function(q){ q.vy += .45; q.vx *= .99; q.x += q.vx; q.y += q.vy; q.a += q.va; g.save(); g.translate(q.x, q.y); g.rotate(q.a); g.fillStyle = q.c; g.fillRect(-q.r / 2, -q.r / 4, q.r, q.r / 2); g.restore(); });
+      if (t - t0 < 2600) requestAnimationFrame(cuadro); else cv.remove();
+    })(t0);
+  }
+
+  /* ---- etiqueta al pasar el mouse ---- */
+  var tip = document.createElement('div'); tip.className = 'ia-tip'; tip.setAttribute('role', 'tooltip'); tip.hidden = true; document.body.appendChild(tip);
+  function verTip(n, texto){
+    tip.textContent = texto; tip.hidden = false;
+    var r = n.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    var x = Math.max(6, Math.min(innerWidth - tw - 6, r.left + r.width / 2 - tw / 2)), y = r.top - th - 10;
+    tip.classList.toggle('abajo', y < 6); if (y < 6) y = r.bottom + 10;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  }
+  function ocultarTip(){ tip.hidden = true; }
+
+  /* ---- música de fondo: arranca con la primera interacción (los navegadores no dejan antes) ---- */
+  var musica = null;
+  if (P.musica && P.medios && P.medios[P.musica]) {
+    musica = new Audio(P.medios[P.musica]); musica.loop = true; musica.volume = Math.max(0, Math.min(1, (parseFloat(P.musicaVol) || 50) / 100));
+    var bMus = document.createElement('button'); bMus.className = 'ia-mus'; bMus.textContent = '🔊'; bMus.setAttribute('aria-label', 'Silenciar la música'); document.body.appendChild(bMus);
+    var arrancar = function(){ if (!musica.muted && musica.paused) { var pr = musica.play(); if (pr && pr.catch) pr.catch(function(){}); } document.removeEventListener('pointerdown', arrancar); document.removeEventListener('keydown', arrancar); };
+    document.addEventListener('pointerdown', arrancar); document.addEventListener('keydown', arrancar);
+    bMus.addEventListener('click', function(e){ e.stopPropagation(); musica.muted = !musica.muted; if (!musica.muted && musica.paused) musica.play(); bMus.textContent = musica.muted ? '🔇' : '🔊'; bMus.setAttribute('aria-label', musica.muted ? 'Activar la música' : 'Silenciar la música'); });
+  }
+
+  /* ---- animaciones de entrada y elementos ocultos ---- */
+  var nodos = {};
+  function animar(n, an){
+    if (!an || !an.tipo || an.tipo === 'ninguna') return;
+    n.classList.remove('an-' + an.tipo); void n.offsetWidth;
+    n.style.setProperty('--an-d', (parseFloat(an.duracion) || .6) + 's');
+    n.style.setProperty('--an-r', (parseFloat(an.demora) || 0) + 's');
+    n.classList.add('an-' + an.tipo);
+  }
+  function verElementos(ids, modo){
+    (ids || []).forEach(function(id){
+      var n = nodos[id]; if (!n) return;
+      var oculto = n.classList.contains('ia-oculto');
+      var mostrarlo = modo === 'ocultar' ? false : modo === 'mostrar' ? true : oculto;
+      if (mostrarlo && oculto) { n.classList.remove('ia-oculto'); var an = n.__an && n.__an.tipo !== 'ninguna' ? Object.assign({}, n.__an, {demora: 0}) : {tipo: 'zoom', duracion: .45}; animar(n, an); }
+      if (!mostrarlo) n.classList.add('ia-oculto');
+    });
+  }
+
+  var anterior = -1;
   function mostrar(i){
     if (i < 0 || i >= P.pantallas.length) return;
-    actual = i;
+    var previo = actual;
+    actual = i; ocultarTip(); nodos = {};
+    // transición entre pantallas
+    if (P.transicion && P.transicion !== 'ninguna' && anterior >= 0) {
+      esc.classList.remove('tr-fundido', 'tr-deslizar', 'tr-deslizar-atras', 'tr-zoom'); void esc.offsetWidth;
+      esc.classList.add(P.transicion === 'deslizar' && i < previo ? 'tr-deslizar-atras' : 'tr-' + P.transicion);
+    }
+    anterior = i;
     if (window.__ia) window.__ia.pantalla(i);
     var p = P.pantallas[i];
     esc.innerHTML = '';
@@ -1028,10 +1308,29 @@ function reproductor(){
     esc.style.backgroundImage = p.fondoImg ? 'url("' + p.fondoImg + '")' : 'none';
     p.elementos.forEach(function(el){
       var n = crearNodo(el, P.medios || {}, true), a = el.accion;
+      nodos[el.id] = n; n.__an = el.anim;
+      if (el.oculto) n.classList.add('ia-oculto'); else animar(n, el.anim);
+      // al terminar la animación de entrada se saca la clase, para que no se repita al pasar el mouse
+      n.addEventListener('animationend', function(e){ if (e.target === n && e.animationName.indexOf('an-') === 0 && e.animationName !== 'an-latir') n.classList.remove('an-' + e.animationName.slice(3)); });
+      if (el.tooltip) {
+        n.addEventListener('pointerenter', function(){ verTip(n, el.tooltip); });
+        n.addEventListener('pointerleave', ocultarTip);
+        n.addEventListener('focus', function(){ verTip(n, el.tooltip); });
+        n.addEventListener('blur', ocultarTip);
+        if (!n.hasAttribute('tabindex')) { n.tabIndex = 0; n.setAttribute('aria-label', el.tooltip); }
+      }
+      if (P.sonidos && el.tipo !== 'temporizador') {
+        n.addEventListener('resuelto', function(){ sonar(el.tipo === 'llave' ? 'moneda' : 'acierto'); });
+        n.addEventListener('fallo', function(){ sonar('error'); });
+      }
       // actividades resueltas: pasan de pantalla si así se configuró
       var ex = el.exito;
       // seguimiento SCORM (solo existe en los paquetes para aulas virtuales)
       n.addEventListener('resuelto', function(e){ if (window.__ia) window.__ia.actividad(el.id, e.detail && e.detail.puntaje != null ? e.detail.puntaje : 1); });
+      if (ex && ((ex.revelar && ex.revelar.length) || ex.festejo)) n.addEventListener('resuelto', function(){
+        if (ex.revelar) verElementos(ex.revelar, 'mostrar');
+        if (ex.festejo) { festejar(); if (P.sonidos) setTimeout(function(){ sonar('festejo'); }, 250); }
+      });
       if (ex && ex.tipo && ex.tipo !== 'ninguna') n.addEventListener('resuelto', function(){
         var desde = actual;
         setTimeout(function(){
@@ -1039,12 +1338,14 @@ function reproductor(){
           if (ex.tipo === 'siguiente') mostrar(actual + 1); else if (ex.tipo === 'ir') mostrar(indice(ex.destino));
         }, 1400);
       });
-      if (a && a.tipo && a.tipo !== 'ninguna') {
+      var conAccion = a && a.tipo && a.tipo !== 'ninguna';
+      if (conAccion || el.sonidoClic) {
         n.classList.add('activo'); n.tabIndex = 0;
-        n.setAttribute('role', a.tipo === 'enlace' ? 'link' : 'button');
-        n.setAttribute('aria-label', el.alt || el.texto || 'Elemento interactivo');
-        n.addEventListener('click', function(){ ejecutar(a, n); });
-        n.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ejecutar(a, n); } });
+        n.setAttribute('role', conAccion && a.tipo === 'enlace' ? 'link' : 'button');
+        n.setAttribute('aria-label', el.alt || el.texto || el.tooltip || 'Elemento interactivo');
+        var tocar = function(){ if (el.sonidoClic) sonar(el.sonidoClic); if (conAccion) ejecutar(a, n); };
+        n.addEventListener('click', tocar);
+        n.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tocar(); } });
       }
       esc.appendChild(n);
     });
@@ -1057,6 +1358,8 @@ function reproductor(){
     else if (a.tipo === 'siguiente') mostrar(actual + 1);
     else if (a.tipo === 'anterior') mostrar(actual - 1);
     else if (a.tipo === 'enlace' && a.url) window.open(a.url, '_blank', 'noopener');
+    else if (a.tipo === 'mostrar') verElementos(a.destinos, a.modo || 'mostrar');
+    else if (a.tipo === 'festejo') { festejar(); sonar('festejo'); }
   }
   function abrir(a, n){
     ultimoFoco = n;
@@ -1097,7 +1400,41 @@ body{background:#1d2430;display:flex;flex-direction:column;align-items:center;ju
 .ventana h2{margin:0 0 10px;color:#14345f;font-size:24px}
 .ventana img{display:block;max-width:100%;max-height:45vh;margin:8px auto 14px;border-radius:10px}
 .ventana p{white-space:pre-wrap;margin:0 0 16px}
-#vc{background:#2a5ea8;color:#fff;border:0;border-radius:10px;padding:10px 22px;font-size:17px;cursor:pointer}`;
+#vc{background:#2a5ea8;color:#fff;border:0;border-radius:10px;padding:10px 22px;font-size:17px;cursor:pointer}
+.ia-oculto{display:none!important}
+.ia-tip{position:fixed;z-index:40;max-width:min(320px,80vw);background:#1d2430;color:#fff;font:500 15px/1.35 system-ui,sans-serif;padding:8px 12px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.3);pointer-events:none;white-space:pre-wrap}
+.ia-tip::after{content:"";position:absolute;left:50%;top:100%;margin-left:-7px;border:7px solid transparent;border-top-color:#1d2430}
+.ia-tip.abajo::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:#1d2430}
+.ia-confeti{position:fixed;inset:0;pointer-events:none;z-index:60}
+.ia-mus{position:fixed;top:10px;right:10px;z-index:30;width:44px;height:44px;border-radius:50%;border:0;background:rgba(29,36,48,.75);color:#fff;font-size:20px;cursor:pointer}
+.ia-mus:focus-visible{outline:4px solid #ffbf3c;outline-offset:3px}
+.an-aparecer{animation:an-aparecer var(--an-d,.6s) ease-out var(--an-r,0s) both}
+.an-subir{animation:an-subir var(--an-d,.6s) cubic-bezier(.2,.8,.3,1) var(--an-r,0s) both}
+.an-bajar{animation:an-bajar var(--an-d,.6s) cubic-bezier(.2,.8,.3,1) var(--an-r,0s) both}
+.an-izquierda{animation:an-izquierda var(--an-d,.6s) cubic-bezier(.2,.8,.3,1) var(--an-r,0s) both}
+.an-derecha{animation:an-derecha var(--an-d,.6s) cubic-bezier(.2,.8,.3,1) var(--an-r,0s) both}
+.an-zoom{animation:an-zoom var(--an-d,.6s) cubic-bezier(.2,.8,.3,1) var(--an-r,0s) both}
+.an-rebote{animation:an-rebote var(--an-d,.8s) ease-out var(--an-r,0s) both}
+.an-girar{animation:an-girar var(--an-d,.7s) ease-out var(--an-r,0s) both}
+.an-latir{animation:an-latir var(--an-d,1.2s) ease-in-out var(--an-r,0s) infinite}
+@keyframes an-aparecer{from{opacity:0}}
+@keyframes an-subir{from{opacity:0;translate:0 50px}}
+@keyframes an-bajar{from{opacity:0;translate:0 -50px}}
+@keyframes an-izquierda{from{opacity:0;translate:-80px 0}}
+@keyframes an-derecha{from{opacity:0;translate:80px 0}}
+@keyframes an-zoom{from{opacity:0;scale:.5}}
+@keyframes an-rebote{0%{opacity:0;scale:.3}55%{opacity:1;scale:1.1}75%{scale:.95}100%{scale:1}}
+@keyframes an-girar{from{opacity:0;rotate:-200deg;scale:.4}}
+@keyframes an-latir{50%{scale:1.07}}
+.tr-fundido{animation:tr-fundido .45s ease-out}
+.tr-deslizar{animation:tr-deslizar .45s cubic-bezier(.2,.8,.3,1)}
+.tr-deslizar-atras{animation:tr-deslizar-atras .45s cubic-bezier(.2,.8,.3,1)}
+.tr-zoom{animation:tr-zoom .45s cubic-bezier(.2,.8,.3,1)}
+@keyframes tr-fundido{from{opacity:0}}
+@keyframes tr-deslizar{from{opacity:0;translate:6% 0}}
+@keyframes tr-deslizar-atras{from{opacity:0;translate:-6% 0}}
+@keyframes tr-zoom{from{opacity:0;scale:.93}}
+@media (prefers-reduced-motion:reduce){[class*="an-"],[class*="tr-"]{animation:none!important}}`;
 
 /* =========================================================
    Estado del editor
@@ -1126,7 +1463,9 @@ const BD = (() => {
 })();
 function mediosUsados(){
   const out = {};
-  proyecto.pantallas.forEach(p => p.elementos.forEach(e => { if (e.medio && medios[e.medio]) out[e.medio] = medios[e.medio]; }));
+  const usar = id => { if (id && medios[id]) out[id] = medios[id]; };
+  proyecto.pantallas.forEach(p => p.elementos.forEach(e => { usar(e.medio); if (e.sonidoClic && e.sonidoClic.startsWith('archivo:')) usar(e.sonidoClic.slice(8)); }));
+  usar(proyecto.musica);
   return out;
 }
 function incorporarMedios(d){
@@ -1182,6 +1521,13 @@ const FABRICA = {
   cerradura: () => base('cerradura', {w: 110, h: 132, modo: 'llave', nombre: 'llave dorada', codigo: '1234', colorAct: '#5b6676', resalte: 'iluminar',
              msjBloqueada: 'Está cerrada. Necesitás encontrar la llave.', exito: {tipo: 'siguiente', destino: ''}}),
   linterna: () => base('linterna', {radio: 120, oscuridad: 0.92}),
+  vf:      () => base('quiz', Object.assign({}, TARJETA, {w: 460, h: 250, pregunta: 'Todo cuadrado es un rectángulo.', opciones: 'Verdadero\nFalso', correcta: 1,
+             msjBien: '¡Correcto! Tiene cuatro ángulos rectos.', msjMal: 'No. Pensá en la definición de rectángulo.', reintentar: false})),
+  respuesta: () => base('respuesta', Object.assign({}, TARJETA, {w: 480, h: 220, pregunta: '¿Cuánto es 3/4 de 20?', modo: 'numero', respuestas: '15', tolerancia: 0,
+             msjBien: '¡Correcto!', msjMal: 'No es correcto. Probá otra vez.', reintentar: true})),
+  girable: () => base('girable', {w: 240, h: 300, tam: 24, frente: 'Triángulo equilátero', dorso: 'Tres lados iguales y tres ángulos de 60°',
+             colorFrente: '#2a5ea8', letraFrente: '#ffffff', colorDorso: '#ffffff', letraDorso: '#1d2430', radio: 16, resalte: 'elevar'}),
+  web:     () => base('web', {w: 640, h: 380, url: '', alt: 'Contenido incrustado', radio: 8}),
   videoquiz: () => base('videoquiz', {w: 640, h: 360, tam: 20, colorAct: '#2a5ea8', preguntas: [], alErrar: 'volver', bloquear: true, pedirNombre: true, titulo: ''})
 };
 
@@ -1382,17 +1728,17 @@ function proyectoEscape(){
   const ventana = (titulo, texto) => accion({tipo: 'ventana', titulo, texto});
 
   portada.elementos.push(
-    T({x: 60, y: 60, w: 840, h: 110, texto: 'El laboratorio secreto', tam: 64, color: '#ffbf3c', negrita: true, alinear: 'center', letra: 'fredoka'}),
-    T({x: 120, y: 180, w: 720, h: 150, texto: 'Quedaste encerrado en la biblioteca de un científico. La única salida es la puerta del laboratorio, que tiene un candado de tres números. Buscá pistas, resolvé los desafíos y juntá los números antes de que suene la alarma.', tam: 22, color: '#e8edf5', alinear: 'center', letra: 'lexend'}),
-    B({x: 380, y: 360, w: 200, h: 70, texto: 'Entrar', tam: 30, relleno: '#e8a317', color: '#1d2430', accion: ir(biblio)}),
+    T({x: 60, y: 60, w: 840, h: 110, texto: 'El laboratorio secreto', tam: 64, color: '#ffbf3c', negrita: true, alinear: 'center', letra: 'fredoka', anim: {tipo: 'bajar', demora: 0, duracion: .8}}),
+    T({x: 120, y: 180, w: 720, h: 150, texto: 'Quedaste encerrado en la biblioteca de un científico. La única salida es la puerta del laboratorio, que tiene un candado de tres números. Buscá pistas, resolvé los desafíos y juntá los números antes de que suene la alarma.', tam: 22, color: '#e8edf5', alinear: 'center', letra: 'lexend', anim: {tipo: 'aparecer', demora: .5, duracion: .8}}),
+    B({x: 380, y: 360, w: 200, h: 70, texto: 'Entrar', tam: 30, relleno: '#e8a317', color: '#1d2430', accion: ir(biblio), sonidoClic: 'campana', anim: {tipo: 'rebote', demora: 1.1, duracion: .8}}),
     B({x: 395, y: 450, w: 170, h: 46, texto: 'Cómo se juega', tam: 18, relleno: 'transparent', color: '#cfd8e6', borde: 2, colorBorde: '#cfd8e6', resalte: 'iluminar',
       accion: ventana('Cómo se juega', 'Tocá todo lo que te llame la atención: algunos objetos esconden pistas.\n\nSi encontrás una llave, tocala para guardarla. Se usa sola cuando tocás la cerradura correcta.\n\nCada desafío resuelto te da un número del candado. Anotalos.')})
   );
 
   biblio.elementos.push(
-    Object.assign(FABRICA.zona(), {x: 40, y: 70, w: 250, h: 330, alt: 'Biblioteca', accion: ventana('Un libro distinto', 'Entre los libros hay uno que dice en el lomo: Geometría. Adentro, una hoja doblada: la primera pista está en el escritorio de al lado.')}),
-    Object.assign(FABRICA.zona(), {x: 400, y: 80, w: 190, h: 130, alt: 'Ventana', accion: ventana('La ventana', 'Afuera es de noche. Por acá no se puede salir: la ventana está trabada.')}),
-    Object.assign(FABRICA.zona(), {x: 410, y: 240, w: 90, h: 60, alt: 'Nota sobre el escritorio', accion: ventana('Una nota', 'Escrito a mano: La llave de la puerta se me cayó cerca de la alfombra. Nunca la encuentro con esta luz…')}),
+    Object.assign(FABRICA.zona(), {x: 40, y: 70, w: 250, h: 330, alt: 'Biblioteca', tooltip: 'Una biblioteca llena de libros', accion: ventana('Un libro distinto', 'Entre los libros hay uno que dice en el lomo: Geometría. Adentro, una hoja doblada: la primera pista está en el escritorio de al lado.')}),
+    Object.assign(FABRICA.zona(), {x: 400, y: 80, w: 190, h: 130, alt: 'Ventana', tooltip: 'La ventana', accion: ventana('La ventana', 'Afuera es de noche. Por acá no se puede salir: la ventana está trabada.')}),
+    Object.assign(FABRICA.zona(), {x: 410, y: 240, w: 90, h: 60, alt: 'Nota sobre el escritorio', tooltip: 'Un papel sobre el escritorio', accion: ventana('Una nota', 'Escrito a mano: La llave de la puerta se me cayó cerca de la alfombra. Nunca la encuentro con esta luz…')}),
     Object.assign(FABRICA.llave(), {x: 150, y: 452, w: 90, h: 45, rot: -18, nombre: 'llave de bronce', colorAct: '#c9973a'}),
     Object.assign(FABRICA.cerradura(), {x: 790, y: 300, w: 50, h: 60, nombre: 'llave de bronce', msjBloqueada: 'La puerta está cerrada. Tiene que haber una llave por algún lado.', exito: {tipo: 'ir', destino: escritorio.id}}),
     Object.assign(FABRICA.linterna(), {x: 0, y: 0, w: 960, h: 540, radio: 140, oscuridad: 0.94})
@@ -1410,14 +1756,14 @@ function proyectoEscape(){
   mapa.elementos.push(
     T({x: 40, y: 20, w: 880, h: 70, texto: 'Un mapa roto en pedazos. Tocá dos piezas para cambiarlas de lugar hasta armarlo.', tam: 24, color: '#3a2614', negrita: true, letra: 'lexend'}),
     Object.assign(FABRICA.puzzle(), {x: 180, y: 95, w: 480, h: 320, src: svgURL(SVG_MAPA), filas: 3, columnas: 3, msjBien: '¡Armaste el mapa! El número grande es el tercero del candado.'}),
-    Object.assign(FABRICA.rect(), {x: 690, y: 130, w: 230, h: 150, rot: 4, relleno: '#fff8dc', color: '#3a2614', texto: 'Si te trabás, armá primero las esquinas.', tam: 18, letra: 'patrick', borde: 2, colorBorde: '#c9a86a', radio: 4}),
+    Object.assign(FABRICA.girable(), {x: 700, y: 110, w: 210, h: 230, rot: 4, frente: '¿Te trabaste?\nTocá la tarjeta', dorso: 'Armá primero las cuatro esquinas: son las piezas con dos bordes rectos.', tam: 19, letra: 'patrick', colorFrente: '#8b6b3a', letraFrente: '#fff8dc', colorDorso: '#fff8dc', letraDorso: '#3a2614', radio: 8, tooltip: 'Una ayuda'}),
     B({x: 700, y: 455, w: 220, h: 60, texto: 'Ir a la puerta ▶', tam: 22, accion: ir(puerta)})
   );
 
   puerta.elementos.push(
     T({x: 40, y: 30, w: 600, h: 120, texto: 'La puerta del laboratorio. Ingresá los tres números en orden antes de que suene la alarma.', tam: 26, color: '#ffffff', negrita: true, letra: 'lexend'}),
     Object.assign(FABRICA.temporizador(), {x: 680, y: 30, w: 240, h: 140, minutos: 3, segundos: 0, auto: true, controles: false, sonido: true, msjFin: '¡Alarma!', relleno: '#2a3446', color: '#ffbf3c', exito: {tipo: 'ir', destino: alarma.id}}),
-    Object.assign(FABRICA.cerradura(), {x: 410, y: 190, w: 140, h: 168, modo: 'codigo', codigo: '647', colorAct: '#9aa7b8', resalte: 'agrandar', exito: {tipo: 'ir', destino: final.id}}),
+    Object.assign(FABRICA.cerradura(), {x: 410, y: 190, w: 140, h: 168, modo: 'codigo', codigo: '647', colorAct: '#9aa7b8', resalte: 'agrandar', anim: {tipo: 'latir', demora: 0, duracion: 1.4}, tooltip: 'Candado de tres números', exito: {tipo: 'ir', destino: final.id, festejo: true}}),
     B({x: 380, y: 400, w: 200, h: 56, texto: '💡 Pista', tam: 22, relleno: '#3a4a63', resalte: 'elevar',
       accion: ventana('Repasemos', 'Primer número: los lados del hexágono.\nSegundo número: el valor de x en 2x + 3 = 11.\nTercer número: el que aparece en el mapa.')}),
     T({x: 40, y: 470, w: 520, h: 50, texto: '¿Te faltó algún número? Volvé a buscarlo:', tam: 18, color: '#cfd8e6'}),
@@ -1426,7 +1772,7 @@ function proyectoEscape(){
   );
 
   final.elementos.push(
-    T({x: 60, y: 110, w: 840, h: 120, texto: '¡Escapaste! 🎉', tam: 72, color: '#ffffff', negrita: true, alinear: 'center', letra: 'fredoka'}),
+    T({x: 60, y: 110, w: 840, h: 120, texto: '¡Escapaste! 🎉', tam: 72, color: '#ffffff', negrita: true, alinear: 'center', letra: 'fredoka', anim: {tipo: 'rebote', demora: 0, duracion: .9}}),
     T({x: 120, y: 240, w: 720, h: 100, texto: 'Usaste geometría, ecuaciones y mucha paciencia para abrir el laboratorio.', tam: 26, color: '#eafbe9', alinear: 'center', letra: 'lexend'}),
     B({x: 360, y: 380, w: 240, h: 64, texto: 'Jugar de nuevo', tam: 24, relleno: '#ffffff', color: '#2e9d5b', accion: ir(portada)})
   );
@@ -1435,7 +1781,7 @@ function proyectoEscape(){
     T({x: 120, y: 240, w: 720, h: 80, texto: 'Se terminó el tiempo, pero los números que juntaste siguen sirviendo.', tam: 26, color: '#ffe3e3', alinear: 'center', letra: 'lexend'}),
     B({x: 340, y: 360, w: 280, h: 64, texto: 'Volver a intentar', tam: 24, relleno: '#ffbf3c', color: '#1d2430', accion: ir(puerta)})
   );
-  return {app: 'interactivo-aula', version: 1, titulo: 'Escape room: el laboratorio secreto', ancho: ANCHO, alto: ALTO, navegacion: false, letra: 'lexend', pantallas: P};
+  return {app: 'interactivo-aula', version: 1, titulo: 'Escape room: el laboratorio secreto', ancho: ANCHO, alto: ALTO, navegacion: false, letra: 'lexend', transicion: 'fundido', sonidos: true, pantallas: P};
 }
 
 function validar(d){
@@ -1578,6 +1924,7 @@ function dibujarEscena(){
     if (el.forma === 'circulo') n.classList.add('circ');
     if (selVarios.includes(el.id)) n.classList.add('multi');
     if (el.fijo) { n.classList.add('fijo'); if (el.id === selId) n.classList.add('sel-fijo'); }
+    if (el.oculto) n.classList.add('oculto-ed');
     n.addEventListener('pointerdown', e => iniciarArrastre(e, el, 'mover'));
     escena.appendChild(n); nodos[el.id] = n;
   });
@@ -1792,6 +2139,11 @@ function panelPantalla(){
   <label class="campo">Tipo de letra general<select data-projsel="letra">${opcionesLetra(proyecto.letra || 'sistema', false)}</select></label>
   <label class="chk"><input type="checkbox" data-proj="navegacion"${proyecto.navegacion !== false ? ' checked' : ''}> Mostrar flechas para pasar de pantalla</label>
   <p class="nota">Si las sacás, solo se avanza con los botones y las actividades que armes. Sirve para escape rooms o recorridos donde el estudiante elige el camino.</p>
+  <label class="campo">Transición entre pantallas<select data-projsel="transicion">${opciones({ninguna: 'Sin transición', fundido: 'Fundido', deslizar: 'Deslizar', zoom: 'Acercar'}, proyecto.transicion || 'ninguna')}</select></label>
+  <label class="chk"><input type="checkbox" data-proj="sonidos"${proyecto.sonidos ? ' checked' : ''}> Sonidos en las actividades (acierto, error, llave)</label>
+  <div class="campo">Música de fondo${proyecto.musica ? ' <span class="pild">cargada</span>' : ''}<div class="botones"><button data-hacer="musica">${proyecto.musica ? 'Cambiar' : 'Agregar'} música</button>${proyecto.musica ? '<button data-hacer="musica-quitar">Quitar</button>' : ''}</div></div>
+  ${proyecto.musica ? `<label class="campo">Volumen de la música<select data-projsel="musicaVol">${opciones({20: 'Bajo', 40: 'Medio', 70: 'Alto', 100: 'Máximo'}, String(proyecto.musicaVol || 40))}</select></label>
+  <p class="nota">Arranca cuando la persona toca algo por primera vez (los navegadores no dejan antes) y tiene un botón 🔊 arriba a la derecha para silenciarla.</p>` : ''}
   <h3>Cómo se usa</h3>
   <p class="nota">Tocá un elemento del lienzo para editarlo. Arrastralo para moverlo y usá el cuadradito naranja de la esquina para cambiar el tamaño. La manija redonda de arriba sirve para girarlo. Con doble clic sobre un texto vas directo a escribirlo. Para elegir varios, pintá un recuadro arrastrando sobre el fondo, o usá Mayús + clic. Los elementos con ⚡ tienen una acción. Las actividades y los efectos al pasar el mouse se prueban en la vista previa.</p>
   <p class="nota"><b>Atajos:</b> Ctrl+Z deshacer · Ctrl+Y rehacer · Ctrl+A elegir todo · Ctrl+C y Ctrl+V copiar y pegar (también en otra pantalla) · Ctrl+D duplicar · Supr borrar · flechas para mover (con Mayús, de a 10) · R para girar 15° · Ctrl+S guardar. También podés pegar o arrastrar imágenes sobre el lienzo.</p>`;
@@ -1804,11 +2156,37 @@ function opcionesLetra(v, conGeneral){
   return ops.map(([id, n, f]) => `<option value="${id}"${(v || '') === id ? ' selected' : ''}${f ? ` style="font-family:${escHTML(f)}"` : ''}>${escHTML(n)}</option>`).join('');
 }
 function letraSel(v){ return `<label class="campo">Tipo de letra<select data-prop="letra">${opcionesLetra(v, true)}</select></label>`; }
-const NOMBRES = {videoquiz: 'Video con preguntas', texto: 'Texto', boton: 'Botón', imagen: 'Imagen', zona: 'Zona interactiva', video: 'Video', quiz: 'Opción múltiple', ordenar: 'Ordenar palabras',
+const NOMBRES = {respuesta: 'Respuesta corta', girable: 'Tarjeta que gira', web: 'Contenido web', audio: 'Audio', videoquiz: 'Video con preguntas', texto: 'Texto', boton: 'Botón', imagen: 'Imagen', zona: 'Zona interactiva', video: 'Video', quiz: 'Opción múltiple', ordenar: 'Ordenar palabras',
   puzzle: 'Rompecabezas', temporizador: 'Temporizador', llave: 'Llave', cerradura: 'Cerradura', linterna: 'Efecto linterna'};
 const CON_ACCION = ['texto', 'boton', 'forma', 'imagen', 'zona'];
-const CON_RESALTE = ['texto', 'boton', 'forma', 'imagen', 'zona', 'video', 'llave', 'cerradura'];
-const CON_EXITO = {videoquiz: 'Cuando termina el video', quiz: 'Cuando responde bien', ordenar: 'Cuando lo ordena bien', puzzle: 'Cuando lo arma', temporizador: 'Cuando se termina el tiempo', cerradura: 'Cuando se abre'};
+const ANIMACIONES = {ninguna: 'Sin animación', aparecer: 'Aparece suavemente', subir: 'Sube desde abajo', bajar: 'Baja desde arriba', izquierda: 'Entra desde la izquierda',
+  derecha: 'Entra desde la derecha', zoom: 'Crece desde el centro', rebote: 'Rebota', girar: 'Entra girando', latir: 'Late todo el tiempo (para llamar la atención)'};
+const SONIDOS = {'': 'Sin sonido', clic: 'Clic', acierto: 'Acierto', error: 'Error', moneda: 'Moneda', campana: 'Campana', festejo: 'Festejo'};
+/* nombre corto para reconocer un elemento en las listas */
+function etiquetaEl(e){
+  const n = e.tipo === 'forma' ? (e.forma === 'circulo' ? 'Círculo' : 'Rectángulo') : (NOMBRES[e.tipo] || e.tipo);
+  const t = String(e.texto || e.pregunta || e.frente || e.etiqueta || e.nombre || e.alt || '').replace(/\s+/g, ' ').trim();
+  return t ? `${n}: ${t.length > 30 ? t.slice(0, 30) + '…' : t}` : n;
+}
+function listaElementos(attr, marcados, propio, soloOcultos){
+  const els = pant().elementos.filter(e => e.id !== propio && e.tipo !== 'linterna' && (!soloOcultos || e.oculto));
+  if (!els.length) return '<p class="nota">No hay otros elementos en esta pantalla.</p>';
+  return `<div class="lista-els">${els.map(e => `<label class="chk"><input type="checkbox" ${attr}="${e.id}"${marcados.includes(e.id) ? ' checked' : ''}> ${escHTML(etiquetaEl(e))}${e.oculto ? ' <span class="pild">oculto</span>' : ''}</label>`).join('')}</div>`;
+}
+/* acepta un enlace común o un código <iframe> y devuelve la dirección para incrustar */
+function urlIncrustable(texto){
+  let u = String(texto || '').trim();
+  const m = u.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i); if (m) u = m[1];
+  u = u.replace(/&amp;/g, '&');
+  if (!u) return '';
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+  let gg = u.match(/geogebra\.org\/(?:m|classic|calculator|graphing|geometry|3d|material\/show\/id)\/([A-Za-z0-9]+)/);
+  if (gg && !/material\/iframe/.test(u)) return `https://www.geogebra.org/material/iframe/id/${gg[1]}/width/960/height/540/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/true/rc/false/ld/false/sdz/true/ctl/false`;
+  if (/docs\.google\.com\/forms\/.+\/viewform/.test(u) && !/embedded=true/.test(u)) return u + (u.includes('?') ? '&' : '?') + 'embedded=true';
+  return u;
+}
+const CON_RESALTE = ['texto', 'boton', 'forma', 'imagen', 'zona', 'video', 'llave', 'cerradura', 'girable', 'audio'];
+const CON_EXITO = {respuesta: 'Cuando responde bien', videoquiz: 'Cuando termina el video', quiz: 'Cuando responde bien', ordenar: 'Cuando lo ordena bien', puzzle: 'Cuando lo arma', temporizador: 'Cuando se termina el tiempo', cerradura: 'Cuando se abre'};
 const RESALTES = {ninguno: 'Sin efecto', agrandar: 'Se agranda', achicar: 'Se achica', iluminar: 'Se ilumina', sombra: 'Aparece una sombra', elevar: 'Se eleva', contorno: 'Se marca el contorno', girar: 'Se balancea'};
 
 const BOTONES_ALINEAR = `<button data-hacer="alin-izq" title="Alinear a la izquierda">⇤ Izquierda</button><button data-hacer="alin-ch" title="Centrar horizontalmente">↔ Centro</button><button data-hacer="alin-der" title="Alinear a la derecha">⇥ Derecha</button>
@@ -1851,6 +2229,7 @@ function panelElemento(el){
   if (el.fijo) h += `<p class="nota">Desde un objeto fijo podés pintar el recuadro para elegir lo que tiene encima. Para moverlo, destildá Fijo o cambiá X e Y.</p>`;
   if (t !== 'linterna') h += `<div class="fila">${num('Rotación (°)', 'rot', el.rot || 0, -180, 180)}<div class="botones" style="margin-bottom:9px"><button data-hacer="enderezar" title="Volver a 0°">Enderezar</button></div></div>`;
   if (CON_RESALTE.includes(t)) h += sel('Al pasar el mouse', 'resalte', el.resalte || 'ninguno', RESALTES);
+  if (t !== 'linterna') h += txt('Etiqueta al pasar el mouse (opcional)', 'tooltip', el.tooltip || '', 'Un texto corto que aparece como globito');
 
   if (t === 'texto' || t === 'boton' || t === 'forma') {
     h += `${area('Texto', 'texto', el.texto, 'p-texto')}
@@ -1902,13 +2281,48 @@ function panelElemento(el){
     <div class="fila">${col('Botones', 'colorAct', el.colorAct)}${num('Tamaño de letra', 'tam', el.tam, 10, 60)}</div>`;
   }
 
+  if (t === 'respuesta') {
+    h += `${area('Pregunta', 'pregunta', el.pregunta)}
+    ${sel('Tipo de respuesta', 'modo', el.modo, {numero: 'Un número', texto: 'Una palabra o frase'}, true)}
+    ${area(el.modo === 'numero' ? 'Respuesta correcta (si hay varias equivalentes, una por renglón)' : 'Respuestas aceptadas (una por renglón)', 'respuestas', el.respuestas)}`;
+    if (el.modo === 'numero') h += `${txt('Margen de error aceptado', 'tolerancia', el.tolerancia || 0)}
+    <p class="nota">Acepta coma o punto decimal y fracciones (3/4). Con margen 0 tiene que ser exacto; con 0,1 acepta, por ejemplo, 3,14 o 3,2 para π.</p>`;
+    else h += `<p class="nota">No distingue mayúsculas, tildes ni espacios de más: Pitágoras, pitagoras y PITÁGORAS valen igual. Sumá las variantes que quieras aceptar, una por renglón.</p>`;
+    h += `${txt('Mensaje si acierta', 'msjBien', el.msjBien)}${txt('Mensaje si se equivoca', 'msjMal', el.msjMal)}
+    ${chk('Puede volver a intentar', 'reintentar', el.reintentar)}`;
+  }
+  if (t === 'girable') {
+    h += `<label class="chk"><input type="checkbox" data-prop="verDorso" data-redibujar${el.verDorso ? ' checked' : ''}> Mostrar el dorso en el editor</label>
+    <h3>Frente</h3>${area('Texto', 'frente', el.frente)}
+    <div class="fila">${col('Fondo', 'colorFrente', el.colorFrente)}${col('Letra', 'letraFrente', el.letraFrente)}</div>
+    <div class="botones" style="margin-bottom:10px"><button data-hacer="flip-img-frente">${el.imgFrente ? 'Cambiar' : 'Agregar'} imagen</button>${el.imgFrente ? '<button data-hacer="flip-quitar-frente">Quitar</button>' : ''}</div>
+    <h3>Dorso</h3>${area('Texto', 'dorso', el.dorso)}
+    <div class="fila">${col('Fondo', 'colorDorso', el.colorDorso)}${col('Letra', 'letraDorso', el.letraDorso)}</div>
+    <div class="botones" style="margin-bottom:10px"><button data-hacer="flip-img-dorso">${el.imgDorso ? 'Cambiar' : 'Agregar'} imagen</button>${el.imgDorso ? '<button data-hacer="flip-quitar-dorso">Quitar</button>' : ''}</div>
+    <h3>Aspecto</h3>${letraSel(el.letra)}<div class="fila">${num('Tamaño de letra', 'tam', el.tam, 10, 90)}${num('Redondeo', 'radio', el.radio == null ? 16 : el.radio, 0, 200)}</div>
+    ${chk('Mostrar el ícono ↻ hasta que la den vuelta', 'pista', el.pista !== false)}
+    <p class="nota">Sirve para vocabulario, definiciones, preguntas con su respuesta atrás o cálculos para verificar.</p>`;
+  }
+  if (t === 'web') {
+    h += `<label class="campo">Dirección o código para incrustar<textarea data-especial="url-web" placeholder="https://www.geogebra.org/m/… o el código &lt;iframe&gt; que da la página">${escHTML(el.url || '')}</textarea></label>
+    ${txt('Descripción para lectores de pantalla', 'alt', el.alt)}
+    <p class="nota">Funciona con GeoGebra, Google Maps, Formularios de Google, Padlet, Desmos y otras páginas que permiten incrustarse. Podés pegar el enlace común o el código &lt;iframe&gt; que ofrece la página: el editor saca la dirección. Necesita internet, y en el editor se muestra solo un recuadro: el contenido real se ve en ▶ Probar.</p>`;
+  }
+  if (t === 'audio') {
+    h += `<div class="botones" style="margin-bottom:10px"><button data-hacer="cambiar-audio">Cambiar audio</button></div>
+    ${txt('Texto al lado del botón', 'etiqueta', el.etiqueta || '')}
+    ${chk('Arranca solo al llegar a la pantalla', 'auto', el.auto)}${chk('Repetir en bucle', 'repetir', el.repetir)}
+    <div class="fila">${col('Color del botón', 'colorAct', el.colorAct || '#2a5ea8')}${num('Tamaño de letra', 'tam', el.tam || 18, 10, 60)}</div>
+    <p class="nota">El audio viaja dentro de la presentación y funciona sin internet. Algunos navegadores no dejan que arranque solo hasta que la persona toca algo en la página.</p>`;
+  }
   if (t === 'quiz') {
     const n = String(el.opciones || '').split('\n').map(x => x.trim()).filter(Boolean).length || 1;
     h += `${area('Pregunta', 'pregunta', el.pregunta)}${area('Opciones (una por renglón)', 'opciones', el.opciones)}
-    ${num('Número de la opción correcta', 'correcta', el.correcta, 1, n)}
+    <label class="chk"><input type="checkbox" data-prop="multiple" data-redibujar${el.multiple ? ' checked' : ''}> Tiene más de una respuesta correcta</label>
+    ${el.multiple ? txt('Números de las opciones correctas', 'correctas', el.correctas || '', 'Por ejemplo: 1, 3') : num('Número de la opción correcta', 'correcta', el.correcta, 1, n)}
     ${txt('Mensaje si acierta', 'msjBien', el.msjBien)}${txt('Mensaje si se equivoca', 'msjMal', el.msjMal)}
     ${chk('Puede volver a intentar', 'reintentar', el.reintentar)}
-    <p class="nota">Si no puede reintentar, al equivocarse se le muestra cuál era la correcta.</p>`;
+    <p class="nota">${el.multiple ? 'El estudiante marca todas las que crea correctas y toca Comprobar. Si se equivoca, le dice cuántas acertó.' : 'Si no puede reintentar, al equivocarse se le muestra cuál era la correcta.'}</p>`;
   }
   if (t === 'ordenar') {
     h += `${txt('Consigna', 'consigna', el.consigna)}
@@ -1944,7 +2358,7 @@ function panelElemento(el){
     <div class="botones" style="margin-bottom:10px"><button data-hacer="linterna-toda">Cubrir toda la pantalla</button></div>
     <p class="nota">Va siempre arriba de todo: lo de abajo se descubre al mover el mouse o el dedo, y los toques la atraviesan, así que se puede seguir tocando lo que aparece. En el editor se ve semitransparente para que puedas trabajar debajo; para seleccionarla tocá su etiqueta.</p>`;
   }
-  if (t === 'quiz' || t === 'ordenar' || t === 'temporizador') {
+  if (t === 'quiz' || t === 'respuesta' || t === 'ordenar' || t === 'temporizador') {
     h += `<h3>Aspecto</h3>${letraSel(el.letra)}<div class="fila">${col('Fondo', 'relleno', el.relleno)}${col('Letra', 'color', el.color)}</div>
     <div class="fila">${col('Botones', 'colorAct', el.colorAct)}${num('Tamaño de letra', 'tam', el.tam, 10, 80)}</div>`;
   }
@@ -1954,9 +2368,23 @@ function panelElemento(el){
   }
   if (t !== 'linterna') h += `<label class="campo">Opacidad<input type="range" data-prop="opacidad" min="0.1" max="1" step="0.05" value="${el.opacidad}"></label>`;
 
+  if (t !== 'linterna') {
+    const an = el.anim || {};
+    h += `<h3>Aparición</h3>
+    <label class="campo">Animación de entrada<select data-anim="tipo">${opciones(ANIMACIONES, an.tipo || 'ninguna')}</select></label>`;
+    if (an.tipo && an.tipo !== 'ninguna') h += `<div class="fila"><label class="campo">Espera antes (seg.)<input type="number" data-anim="demora" min="0" max="30" step="0.1" value="${an.demora || 0}"></label>
+      <label class="campo">Duración (seg.)<input type="number" data-anim="duracion" min="0.1" max="10" step="0.1" value="${an.duracion || (an.tipo === 'latir' ? 1.2 : 0.6)}"></label></div>
+      <p class="nota">Con distintas esperas podés hacer que los elementos aparezcan de a uno. Se ve en ▶ Probar.</p>`;
+    h += `<label class="chk"><input type="checkbox" data-prop="oculto" data-redibujar${el.oculto ? ' checked' : ''}> Oculto al empezar</label>`;
+    if (el.oculto) h += `<p class="nota">No se ve hasta que otro elemento lo muestre (acción <b>Muestra u oculta elementos</b>) o hasta que se resuelva una actividad que lo revele. En el editor se ve transparente.</p>`;
+  }
   if (CON_ACCION.includes(t)) {
     const a = el.accion;
-    h += `<h3>Al tocarlo</h3>${selAcc('Acción', 'tipo', a.tipo, {ninguna: 'No hace nada', ventana: 'Abre una ventana emergente', ir: 'Va a otra pantalla', siguiente: 'Pasa a la pantalla siguiente', anterior: 'Vuelve a la pantalla anterior', enlace: 'Abre un enlace web'})}`;
+    h += `<h3>Al tocarlo</h3>${selAcc('Acción', 'tipo', a.tipo, {ninguna: 'No hace nada', ventana: 'Abre una ventana emergente', mostrar: 'Muestra u oculta elementos', ir: 'Va a otra pantalla', siguiente: 'Pasa a la pantalla siguiente', anterior: 'Vuelve a la pantalla anterior', enlace: 'Abre un enlace web', festejo: 'Lanza confeti'})}`;
+    if (a.tipo === 'mostrar') {
+      h += `${selAcc('Qué hace', 'modo', a.modo || 'mostrar', {mostrar: 'Los muestra', ocultar: 'Los oculta', alternar: 'Los muestra y oculta alternando'})}
+      <div class="campo">Elementos de esta pantalla${listaElementos('data-accdest', a.destinos || [], el.id)}</div>`;
+    }
     if (a.tipo === 'ventana') {
       h += `<label class="campo">Título de la ventana<input type="text" data-acc="titulo" value="${escHTML(a.titulo)}"></label>
       <label class="campo">Contenido<textarea data-acc="texto">${escHTML(a.texto)}</textarea></label>
@@ -1968,12 +2396,19 @@ function panelElemento(el){
       h += `<label class="campo">Dirección web<input type="url" data-acc="url" placeholder="https://" value="${escHTML(a.url)}"></label>
       <p class="nota">Los enlaces necesitan internet. El resto de la presentación funciona sin conexión.</p>`;
     }
+    const sc = el.sonidoClic || '';
+    h += `<label class="campo">Sonido al tocarlo<select data-especial="sonido">${opciones(Object.assign({}, SONIDOS, sc.startsWith('archivo:') ? {[sc]: 'Un audio propio'} : {}, {'+archivo': 'Elegir un audio propio…'}), sc)}</select></label>`;
   }
   if (CON_EXITO[t]) {
     const x = el.exito;
     h += `<h3>${CON_EXITO[t]}</h3><label class="campo">Después<select data-exito="tipo">${opciones({ninguna: 'Se queda en la pantalla', siguiente: 'Pasa a la pantalla siguiente', ir: 'Va a otra pantalla'}, x.tipo)}</select></label>`;
     if (x.tipo === 'ir') h += `<label class="campo">Pantalla de destino<select data-exito="destino">${opciones(opcionesPantallas(), x.destino)}</select></label>`;
     if (x.tipo !== 'ninguna') h += `<p class="nota">Espera un momento para que se vea el mensaje y recién ahí cambia de pantalla.</p>`;
+    h += `<label class="chk"><input type="checkbox" data-exitochk="festejo"${x.festejo ? ' checked' : ''}> Festejar con confeti</label>`;
+    const ocultos = pant().elementos.filter(e => e.oculto && e.id !== el.id);
+    h += ocultos.length
+      ? `<div class="campo">Mostrar estos elementos ocultos${listaElementos('data-exitorev', x.revelar || [], el.id, true)}</div>`
+      : `<p class="nota">Para que al resolverla aparezca algo (una llave, una pista, un botón), marcá ese elemento como <b>Oculto al empezar</b> y después elegilo acá.</p>`;
   }
   if (t !== 'linterna') h += `<h3>Ubicar en la pantalla</h3><div class="alin">${BOTONES_ALINEAR}</div>`;
   h += `<h3>Ordenar</h3><div class="botones">
@@ -2017,6 +2452,37 @@ function enlazarPanel(P){
     el.exito[i.dataset.exito] = i.value; cambio();
     if (i.dataset.exito === 'tipo') dibujarPanel();
   }));
+  P.querySelectorAll('[data-anim]').forEach(i => i.addEventListener('input', () => {
+    const el = elSel(); if (!el) return;
+    el.anim = Object.assign({tipo: 'ninguna', demora: 0, duracion: 0.6}, el.anim || {});
+    const k = i.dataset.anim; el.anim[k] = k === 'tipo' ? i.value : parseFloat(i.value) || 0;
+    if (k === 'tipo' && i.value === 'latir' && el.anim.duracion < 0.8) el.anim.duracion = 1.2;
+    cambio(); if (k === 'tipo') dibujarPanel();
+  }));
+  P.querySelectorAll('[data-accdest]').forEach(i => i.addEventListener('input', () => {
+    const el = elSel(); if (!el) return;
+    const s = new Set(el.accion.destinos || []); i.checked ? s.add(i.dataset.accdest) : s.delete(i.dataset.accdest);
+    el.accion.destinos = [...s]; cambio();
+  }));
+  P.querySelectorAll('[data-exitorev]').forEach(i => i.addEventListener('input', () => {
+    const el = elSel(); if (!el) return;
+    const s = new Set(el.exito.revelar || []); i.checked ? s.add(i.dataset.exitorev) : s.delete(i.dataset.exitorev);
+    el.exito.revelar = [...s]; cambio();
+  }));
+  P.querySelectorAll('[data-exitochk]').forEach(i => i.addEventListener('input', () => { const el = elSel(); if (!el) return; el.exito[i.dataset.exitochk] = i.checked; cambio(); }));
+  P.querySelectorAll('[data-especial="sonido"]').forEach(i => i.addEventListener('input', async () => {
+    const el = elSel(); if (!el) return;
+    if (i.value === '+archivo') {
+      const r = await elegirAudio(); if (!r) { i.value = el.sonidoClic || ''; return; }
+      el.sonidoClic = 'archivo:' + r.id; dibujarPanel();
+    } else el.sonidoClic = i.value;
+    dibujarEscena(); cambio();
+  }));
+  P.querySelectorAll('[data-especial="url-web"]').forEach(i => i.addEventListener('change', () => {
+    const el = elSel(); if (!el) return;
+    el.url = urlIncrustable(i.value); i.value = el.url; dibujarEscena(); cambio();
+    if (el.url) aviso('Listo: el contenido se ve en ▶ Probar (necesita internet)');
+  }));
   P.querySelectorAll('[data-pprop]').forEach(i => i.addEventListener('input', () => {
     const p = pant(); p[i.dataset.pprop] = i.value;
     if (i.dataset.pprop === 'nombre') { const s = document.querySelector('.item.activa span'); if (s) s.textContent = `${actual + 1}. ${p.nombre}`; }
@@ -2056,6 +2522,12 @@ async function hacer(acc){
       case 'acc-img': { const f = await elegirArchivo('image/*'); if (!f) return; const d = await leerImagen(f); antes(); el.accion.img = d.src; break; }
       case 'acc-img-quitar': antes(); el.accion.img = null; break;
       case 'cambiar-video': { const r = await elegirVideo(); if (!r) return; antes(); el.medio = r.id; break; }
+      case 'cambiar-audio': { const r = await elegirAudio(); if (!r) return; antes(); el.medio = r.id; break; }
+      case 'flip-img-frente': case 'flip-img-dorso': { const f = await elegirArchivo('image/*'); if (!f) return; const d = await leerImagen(f); antes(); el[acc === 'flip-img-frente' ? 'imgFrente' : 'imgDorso'] = d.src; break; }
+      case 'flip-quitar-frente': antes(); el.imgFrente = null; break;
+      case 'flip-quitar-dorso': antes(); el.imgDorso = null; break;
+      case 'musica': { const r = await elegirAudio(); if (!r) return; antes(); proyecto.musica = r.id; proyecto.musicaVol = proyecto.musicaVol || '40'; break; }
+      case 'musica-quitar': antes(); proyecto.musica = null; break;
       case 'vq-nueva': return abrirPregunta(null);
       case 'alin-izq': return alinear('izq');
       case 'alin-ch': return alinear('ch');
@@ -2111,6 +2583,23 @@ async function elegirVideo(){
   return {id, nombre: f.name};
 }
 let modoVideo = 'video';
+async function elegirAudio(){
+  const f = await elegirArchivo('audio/*'); if (!f) return null;
+  const mb = f.size / 1048576;
+  if (mb > 40) { aviso('Ese audio pesa demasiado (más de 40 MB). Recortalo o pasalo a MP3.'); return null; }
+  if (mb > 10 && !confirm(`El audio pesa ${Math.round(mb)} MB y la presentación va a pesar eso o más. ¿Lo agrego igual?`)) return null;
+  const src = await leerComoDataURL(f);
+  const id = 'm' + uid(); medios[id] = src; BD.poner(id, src);
+  return {id, nombre: f.name.replace(/\.[^.]+$/, '')};
+}
+$('#b-audio').onclick = async () => {
+  let r; try { r = await elegirAudio(); } catch (e) { return aviso('No se pudo leer ese audio'); }
+  if (!r) return;
+  antes();
+  const el = base('audio', {w: 300, h: 64, medio: r.id, etiqueta: r.nombre, colorAct: '#2a5ea8', tam: 18, auto: false, repetir: false, resalte: 'agrandar'});
+  el.x = Math.round((proyecto.ancho - el.w) / 2); el.y = Math.round((proyecto.alto - el.h) / 2);
+  pant().elementos.push(el); elegir([el.id]); dibujarTodo(); cambio();
+};
 function abrirModalVideo(modo){
   modoVideo = modo || 'video';
   $('#m-video-t').textContent = modoVideo === 'videoquiz' ? 'Video con preguntas: elegí el video' : 'Agregar un video';
@@ -2492,7 +2981,7 @@ function puenteSCORM(cfg){
   function buscar(w){ for (var n = 0; w && n < 12; n++) { try { if (w.API) return w.API; } catch (e) {} if (w.parent === w) break; w = w.parent; } return null; }
   var api = buscar(window) || (window.opener ? buscar(window.opener) : null);
   var P = JSON.parse(document.getElementById('datos').textContent);
-  var EVAL = ['quiz', 'ordenar', 'puzzle', 'videoquiz', 'cerradura'], evaluables = [];
+  var EVAL = ['quiz', 'respuesta', 'ordenar', 'puzzle', 'videoquiz', 'cerradura'], evaluables = [];
   P.pantallas.forEach(function(p){ p.elementos.forEach(function(e){ if (EVAL.indexOf(e.tipo) >= 0) evaluables.push(e.id); }); });
   function get(k){ try { return api ? String(api.LMSGetValue(k) || '') : ''; } catch (e) { return ''; } }
   function set(k, v){ try { if (api) api.LMSSetValue(k, String(v)); } catch (e) {} }
@@ -2590,9 +3079,9 @@ function manifiestoSCORM(titulo, minimo){
 </manifest>`;
 }
 function abrirSCORM(){
-  const n = proyecto.pantallas.reduce((s, p) => s + p.elementos.filter(e => ['quiz', 'ordenar', 'puzzle', 'videoquiz', 'cerradura'].includes(e.tipo)).length, 0);
+  const n = proyecto.pantallas.reduce((s, p) => s + p.elementos.filter(e => ['quiz', 'respuesta', 'ordenar', 'puzzle', 'videoquiz', 'cerradura'].includes(e.tipo)).length, 0);
   $('#sc-info').textContent = n
-    ? `Tiene ${n} ${n === 1 ? 'actividad que cuenta' : 'actividades que cuentan'} para el puntaje (opción múltiple, ordenar, rompecabezas, video con preguntas y cerraduras).`
+    ? `Tiene ${n} ${n === 1 ? 'actividad que cuenta' : 'actividades que cuentan'} para el puntaje (opción múltiple, respuesta corta, ordenar, rompecabezas, video con preguntas y cerraduras).`
     : 'No tiene actividades con puntaje: la plataforma va a registrar solo si la recorrió completa.';
   // pantalla final sugerida: la última a la que no se llega porque se terminó el tiempo (en un escape room, la de ganar)
   const porTiempo = new Set();
